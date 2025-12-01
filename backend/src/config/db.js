@@ -7,6 +7,8 @@ const pool = new Pool({
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
     port: process.env.DB_PORT,
+    application_name: "HostLink",
+    options: "-c search_path=HostLink"
 });
 
 module.exports = pool;
