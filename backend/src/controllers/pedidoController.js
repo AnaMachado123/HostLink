@@ -62,9 +62,105 @@ async function listarPedidosProprietario(req, res) {
   }
 }
 
+async function listarTodosPedidos(req, res) {
+  try {
+    // validar admin
+    if (req.user.tipoUser !== 1) {
+      return res.status(403).json({ error: "Acesso restrito a administradores" });
+    }
+
+    const pedidos = await pedidoModel.getAllPedidos();
+
+    // anexar serviços a cada pedido
+    for (const pedido of pedidos) {
+      const servicos = await pedidoModel.getServicosDoPedido(
+        pedido.id_solicitarservico
+      );
+      pedido.servicos = servicos;
+    }
+
+    res.json(pedidos);
+
+  } catch (error) {
+    console.error("Erro ao listar pedidos (admin):", error);
+    res.status(500).json({ error: "Erro ao listar pedidos" });
+  }
+}
+
+async function obterPedidoPorId(req, res) {
+  try {
+    // validar admin
+    if (req.user.tipoUser !== 1) {
+      return res.status(403).json({ error: "Acesso restrito a administradores" });
+    }
+
+    const { id } = req.params;
+
+    const pedido = await pedidoModel.getPedidoById(id);
+
+    if (!pedido) {
+      return res.status(404).json({ error: "Pedido não encontrado" });
+    }
+
+    // buscar serviços do pedido
+    const servicos = await pedidoModel.getServicosDoPedido(id);
+    pedido.servicos = servicos;
+
+    res.json(pedido);
+
+  } catch (error) {
+    console.error("Erro ao obter pedido por ID:", error);
+    res.status(500).json({ error: "Erro ao obter pedido" });
+  }
+}
+
+async function atualizarStatusPedido(req, res) {
+  try {
+    // validar admin
+    if (req.user.tipoUser !== 1) {
+      return res.status(403).json({ error: "Acesso restrito a administradores" });
+    }
+
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const estadosValidos = [
+      "pendente",
+      "agendado",
+      "andamento",
+      "concluido",
+      "cancelado"
+    ];
+
+    if (!estadosValidos.includes(status)) {
+      return res.status(400).json({ error: "Estado inválido" });
+    }
+
+    const pedidoAtualizado = await pedidoModel.updateStatusPedido(id, status);
+
+    if (!pedidoAtualizado) {
+      return res.status(404).json({ error: "Pedido não encontrado" });
+    }
+
+    res.json({
+      message: "Estado do pedido atualizado com sucesso",
+      pedido: pedidoAtualizado
+    });
+
+  } catch (error) {
+    console.error("Erro ao atualizar estado do pedido:", error);
+    res.status(500).json({ error: "Erro ao atualizar estado do pedido" });
+  }
+}
+
+
+
 module.exports = { 
   criarPedido,
-  listarPedidosProprietario
+  listarPedidosProprietario,
+  listarTodosPedidos,
+  obterPedidoPorId,
+  atualizarStatusPedido
 };
 
 

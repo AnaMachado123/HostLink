@@ -5,5 +5,10 @@ const auth = require("../middleware/authMiddleware");
 
 router.post("/", auth, pedidoController.criarPedido);
 router.get("/me", auth, pedidoController.listarPedidosProprietario);
+router.get("/", auth, pedidoController.listarTodosPedidos);
+router.get("/:id", auth, pedidoController.obterPedidoPorId);
+router.patch("/:id/status", auth, pedidoController.atualizarStatusPedido);
+
+
 
 module.exports = router;
