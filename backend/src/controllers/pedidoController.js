@@ -1,7 +1,6 @@
 const pedidoModel = require("../models/pedidoModel");
 
-
-// Criar pedido (proprietário)
+// Criar pedido (Proprietário)
 async function criarPedido(req, res) {
   try {
     const idProprietario = req.user.linkedProfile?.id;
@@ -36,8 +35,7 @@ async function criarPedido(req, res) {
   }
 }
 
-
-// Listar pedidos do proprietário
+// Listar pedidos do proprietário autenticado
 async function listarPedidosProprietario(req, res) {
   try {
     const idProprietario = req.user.linkedProfile?.id;
@@ -62,7 +60,6 @@ async function listarPedidosProprietario(req, res) {
   }
 }
 
-
 // Listar todos os pedidos (Admin)
 async function listarTodosPedidos(req, res) {
   try {
@@ -86,8 +83,7 @@ async function listarTodosPedidos(req, res) {
   }
 }
 
-
-// Obter pedido por ID (Admin)
+// Obter pedido por ID (Admin ou Proprietário)
 async function obterPedidoPorId(req, res) {
   try {
     const idPedido = req.params.id;
@@ -97,7 +93,6 @@ async function obterPedidoPorId(req, res) {
       return res.status(404).json({ error: "Pedido não encontrado" });
     }
 
-    // Admin pode sempre ver
     if (
       req.user.tipoUser !== 1 &&
       req.user.linkedProfile?.id !== pedido.id_proprietario
@@ -106,7 +101,6 @@ async function obterPedidoPorId(req, res) {
     }
 
     pedido.servicos = await pedidoModel.getServicosDoPedido(idPedido);
-
     res.json(pedido);
 
   } catch (error) {
@@ -114,7 +108,6 @@ async function obterPedidoPorId(req, res) {
     res.status(500).json({ error: "Erro ao obter pedido" });
   }
 }
-
 
 // Atualizar estado do pedido (Admin)
 async function atualizarEstadoPedido(req, res) {

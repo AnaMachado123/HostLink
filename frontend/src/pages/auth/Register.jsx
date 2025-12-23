@@ -215,8 +215,8 @@ export default function Register() {
           >
             <option value="">Select your role</option>
             <option value="guest">Guest</option>
-            <option value="proprietor">Property Owner</option>
-            <option value="company">Service Company</option>
+            <option value="proprietario">Property Owner</option>
+            <option value="empresa">Service Company</option>
           </select>
           {errors.role && <p className={styles.error}>{errors.role}</p>}
 
