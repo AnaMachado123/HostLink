@@ -50,7 +50,7 @@ async function getServicosDoPedido(idPedido) {
   return result.rows;
 }
 
-// Buscar todos os pedidos (admin)
+// Buscar todos os pedidos (ADMIN)
 async function getAllPedidos() {
   const result = await pool.query(
     `SELECT 
@@ -62,10 +62,11 @@ async function getAllPedidos() {
      JOIN utilizador u ON u.id_utilizador = p.id_utilizador
      ORDER BY s.data DESC`
   );
+
   return result.rows;
 }
 
-// Buscar pedido por ID (admin)
+// Buscar pedido por ID (ADMIN)
 async function getPedidoById(idPedido) {
   const result = await pool.query(
     `SELECT 
@@ -82,7 +83,8 @@ async function getPedidoById(idPedido) {
   return result.rows[0];
 }
 
-async function updateStatusPedido(idPedido, novoStatus) {
+// Atualizar estado do pedido
+async function updatePedidoStatus(idPedido, novoStatus) {
   const result = await pool.query(
     `UPDATE solicitarservico
      SET status = $1
@@ -94,18 +96,6 @@ async function updateStatusPedido(idPedido, novoStatus) {
   return result.rows[0];
 }
 
-// Após um serviço ser executado
-async function atualizarStatusPedido(idPedido, status) {
-  await pool.query(
-    `UPDATE solicitarservico
-     SET status = $1
-     WHERE id_solicitarservico = $2`,
-    [status, idPedido]
-  );
-}
-
-
-
 module.exports = {
   createPedido,
   addServicosToPedido,
@@ -113,6 +103,5 @@ module.exports = {
   getServicosDoPedido,
   getAllPedidos,
   getPedidoById,
-  updateStatusPedido,
-  atualizarStatusPedido
+  updatePedidoStatus
 };

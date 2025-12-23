@@ -1,0 +1,272 @@
+/* =========================================================
+   PAGE LAYOUT
+========================================================= */
+.page {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  background-color: #e5e4e2;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* =========================================================
+   LEFT SIDE (vermelho premium)
+========================================================= */
+.leftSide {
+  width: 50%;
+  background: #0A2344;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+}
+
+/* círculo atrás da logo */
+.iconCircle {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background-color: #0A2344;
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 50px;
+  box-shadow: 0 12px 35px rgb(0, 0, 0);
+}
+
+/* ícone */
+.iconImg {
+  width: 250px;
+  height: 250px;
+  object-fit: contain;
+  filter: none;
+}
+
+/* título */
+.leftTitle {
+  font-family: 'Poppins', sans-serif;
+  font-size: 58px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #e5e4e2;
+  margin-bottom: 18px;
+}
+
+/* subtítulo */
+.leftSubtitle {
+  margin-top: 6px;
+  max-width: 420px;
+  text-align: center;
+  color: #e5e4e2;
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+/* =========================================================
+   RIGHT SIDE
+========================================================= */
+.rightSide {
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* cartão */
+.loginCard {
+  width: 430px;
+  padding: 50px;
+  background: #e5e4e2;
+  border-radius: 26px;
+  box-shadow: 0px 10px 28px rgb(0, 0, 0);
+  animation: fadeSlide 0.7s ease forwards;
+  opacity: 0;
+}
+
+.cardTitle {
+  font-size: 32px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #0A2344;
+}
+
+.cardSubtitle {
+  margin-bottom: 26px;
+  font-size: 15px;
+  color: #000000;
+}
+
+/* labels */
+.label {
+  margin-top: 14px;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #0A2344;
+  font-size: 15px;
+}
+
+/* inputs */
+.input {
+  width: 100%;
+  height: 50px;
+  border-radius: 12px;
+  border: 1px solid #d6d9dc;
+  padding-left: 14px;
+  font-size: 15px;
+  background-color: #f3ecec;
+  color: #000;
+  caret-color: #0A2344;
+  margin-bottom: 10px;
+}
+
+/* REMEMBER ME */
+.rememberRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 5px 0 20px 0;
+}
+
+.checkbox {
+  width: 18px;
+  height: 18px;
+  accent-color: #0A2344;
+  cursor: pointer;
+}
+
+.rememberLabel {
+  font-size: 14px;
+  color: #0A2344;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* forgot password */
+.forgot {
+  font-size: 14px;
+  color: #0A2344;
+  margin-bottom: 24px;
+  display: inline-block;
+  text-decoration: none;
+}
+
+.forgot:hover {
+  color: #0A2344;
+}
+
+/* =========================================================
+   BOTÃO (com hover + clique)
+========================================================= */
+.button {
+  width: 100%;
+  height: 50px;
+  background-color: #0A2344;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: 22px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background-color 0.12s ease;
+}
+
+/* hover elegante */
+.button:hover {
+  background-color: #0A2344;
+}
+
+/* animação de clique */
+.button:active {
+  transform: scale(0.96);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+  background-color: #0A2344;
+}
+
+/* remover brilho branco do foco */
+.button:focus,
+.button:focus-visible {
+  outline: none;
+}
+
+/* texto final */
+.bottomText {
+  font-size: 15px;
+  color: #000000;
+  text-align: center;
+}
+
+.createLink {
+  color: #0A2344;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.createLink:hover {
+  color: #0A2344;
+}
+
+/* error text chamativo */
+.error {
+  color: #0b2d5a;
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 4px;
+  margin-bottom: 12px;
+}
+
+/* input com erro */
+.inputError {
+  border: 2px solid #0A2344 !important;
+  background-color: #e5e4e2;
+}
+
+/* mensagem suave indicando o que fazer */
+.tip {
+  font-size: 13px;
+  color: #0A2344;
+  margin-top: 4px;
+  margin-bottom: 12px;
+  opacity: 0.9;
+}
+
+/* input disabled */
+.input:disabled {
+  background-color: #e2dede;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+.forgotWrapper {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.forgot {
+  font-size: 14px;
+  color: #0A2344;
+  cursor: pointer;
+  text-decoration: none;
+  margin-bottom: 20px;
+}
+
+.forgot:hover {
+  color: #06172c;
+}
+
+
+/* animação */
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
