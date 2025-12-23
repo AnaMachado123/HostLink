@@ -50,10 +50,51 @@ async function getServicosDoPedido(idPedido) {
   return result.rows;
 }
 
+// Listar todos os pedidos (ADMIN)
+async function getAllPedidos() {
+  const result = await pool.query(
+    `SELECT 
+        s.*,
+        TO_CHAR(s.data, 'YYYY-MM-DD') AS data_formatada
+     FROM solicitarservico s
+     ORDER BY s.data DESC`
+  );
+  return result.rows;
+}
+
+// Buscar um pedido pelo ID
+async function getPedidoById(idPedido) {
+  const result = await pool.query(
+    `SELECT 
+        s.*,
+        TO_CHAR(s.data, 'YYYY-MM-DD') AS data_formatada
+     FROM solicitarservico s
+     WHERE s.id_solicitarservico = $1`,
+    [idPedido]
+  );
+
+  return result.rows[0];
+}
+
+// Atualizar estado do pedido
+async function updatePedidoStatus(idPedido, novoEstado) {
+  const result = await pool.query(
+    `UPDATE solicitarservico
+     SET status = $1
+     WHERE id_solicitarservico = $2
+     RETURNING *`,
+    [novoEstado, idPedido]
+  );
+
+  return result.rows[0];
+}
 
 module.exports = {
   createPedido,
   addServicosToPedido,
   getPedidosByProprietario,
-  getServicosDoPedido
+  getServicosDoPedido,
+  getAllPedidos,
+  getPedidoById,
+  updatePedidoStatus
 };
