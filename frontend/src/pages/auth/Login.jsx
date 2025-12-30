@@ -13,10 +13,10 @@ export default function Login() {
 
   const fromRegister = location.state?.fromRegister === true;
 
-  const [email, setEmail]       = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const [emailError, setEmailError]       = useState("");
+  const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
   const emailValid = email && emailError === "";
@@ -53,6 +53,7 @@ export default function Login() {
     try {
       toast.info("Checking credentials...", { autoClose: 1000 });
 
+      // ✅ CORREÇÃO AQUI (endpoint)
       const res = await api.post("/login", {
         username: email,
         password,
@@ -60,10 +61,24 @@ export default function Login() {
 
       toast.success("Welcome!", { autoClose: 1200 });
 
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
+      const { token, user } = res.data;
 
-      setTimeout(() => navigate("/dashboard"), 1300);
+      // guardar sessão
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+
+      // redirecionar por role
+      setTimeout(() => {
+        if (user.role === "proprietario") {
+          navigate("/dashboard/proprietario");
+        } else if (user.role === "empresa") {
+          navigate("/dashboard/empresa");
+        } else if (user.role === "guest") {
+          navigate("/dashboard/guest");
+        } else {
+          navigate("/");
+        }
+      }, 1300);
 
     } catch (err) {
       console.error(err);
@@ -94,20 +109,22 @@ export default function Login() {
       {/* RIGHT SIDE */}
       <div className={styles.rightSide}>
         <form className={styles.loginCard} onSubmit={handleSubmit}>
-
-          {/* TITLES — dinâmicos */}
           <h2 className={styles.cardTitle}>
             {fromRegister ? "Welcome!" : "Welcome Back!"}
           </h2>
 
           <p className={styles.cardSubtitle}>
-            {fromRegister ? "Sign in to start using HostLink" : "Sign in to HostLink"}
+            {fromRegister
+              ? "Sign in to start using HostLink"
+              : "Sign in to HostLink"}
           </p>
 
           {/* EMAIL */}
           <label className={styles.label}>Email</label>
           <input
-            className={`${styles.input} ${emailError ? styles.inputError : ""}`}
+            className={`${styles.input} ${
+              emailError ? styles.inputError : ""
+            }`}
             placeholder="example@email.com"
             value={email}
             onChange={handleEmailChange}
@@ -136,8 +153,8 @@ export default function Login() {
           {/* FORGOT PASSWORD */}
           <div className={styles.forgotWrapper}>
             <a className={styles.forgot} href="/forgot-password">
-            Forgot password?
-          </a>
+              Forgot password?
+            </a>
           </div>
 
           {/* BUTTON */}
@@ -145,7 +162,7 @@ export default function Login() {
             Sign in
           </button>
 
-          {/* LINK REGISTER */}
+          {/* REGISTER */}
           <p className={styles.bottomText}>
             Don’t have an account?{" "}
             <Link to="/register" className={styles.createLink}>

@@ -3,10 +3,13 @@ const router = express.Router();
 const EmpresaController = require("../controllers/empresaController");
 const authMiddleware = require("../middleware/authMiddleware");
 
-router.post("/", authMiddleware, EmpresaController.createProfile);
+// Create or update company profile
+router.post("/profile", authMiddleware, EmpresaController.createProfile);
 
-router.get("/me", authMiddleware, EmpresaController.getMyProfile);
+// Get logged-in company profile
+router.get("/me", authMiddleware, EmpresaController.getMe);
 
-router.get("/", authMiddleware, EmpresaController.getAll);
+// (opcional – admin, podemos ativar depois)
+// router.get("/", authMiddleware, EmpresaController.getAll);
 
 module.exports = router;

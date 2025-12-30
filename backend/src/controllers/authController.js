@@ -11,6 +11,13 @@ const ROLE_MAP = {
   guest: 4
 };
 
+// Reverse mapping (CRITICAL for frontend & JWT)
+const ROLE_MAP_REVERSE = {
+  2: "proprietario",
+  3: "empresa",
+  4: "guest"
+};
+
 // =======================
 // REGISTER
 // =======================
@@ -40,9 +47,8 @@ async function register(req, res) {
     return res.status(201).json({
       message: "User registered successfully",
       user: {
-        id: newUser.id_utilizador,
-        username: newUser.username,
-        id_tipouser: newUser.id_tipouser
+        id_utilizador: newUser.id_utilizador,
+        role
       }
     });
   } catch (err) {
@@ -59,6 +65,7 @@ async function login(req, res) {
 
   try {
     const user = await AuthModel.findUserByUsername(username);
+
     if (!user) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
@@ -68,10 +75,12 @@ async function login(req, res) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
+    const role = ROLE_MAP_REVERSE[user.id_tipouser];
+
     const token = jwt.sign(
       {
-        id: user.id_utilizador,
-        id_tipouser: user.id_tipouser
+        id_utilizador: user.id_utilizador,
+        role
       },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
@@ -79,7 +88,13 @@ async function login(req, res) {
 
     return res.json({
       message: "Login successful",
-      token
+      token,
+      user: {
+        id_utilizador: user.id_utilizador,
+        role,
+        nome: user.nome,
+        email: user.username // username = email
+      }
     });
   } catch (err) {
     console.error(err);
@@ -88,9 +103,37 @@ async function login(req, res) {
 }
 
 // =======================
-// EXPORTS (CRITICAL)
+// GET AUTHENTICATED USER
+// =======================
+async function me(req, res) {
+  try {
+    const { id_utilizador, role } = req.user;
+
+    const user = await AuthModel.findUserById(id_utilizador);
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    return res.json({
+      id_utilizador: user.id_utilizador,
+      role,
+      nome: user.nome,
+      email: user.username // username = email
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      error: "Error fetching authenticated user"
+    });
+  }
+}
+
+// =======================
+// EXPORTS
 // =======================
 module.exports = {
   register,
-  login
+  login,
+  me
 };
