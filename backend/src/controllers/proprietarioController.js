@@ -1,86 +1,87 @@
 const ProprietarioModel = require("../models/proprietarioModel");
 
 const ProprietarioController = {
-    // Criar perfil de proprietário para o utilizador autenticado
-    createProfile: async (req, res) => {
-        try {
-            const { id, tipoUser } = req.user; // vem do token
 
-            // Só tipoUser 2 (proprietário) pode criar este perfil
-            if (tipoUser !== 2) {
-                return res.status(403).json({ error: "Only owner accounts can create a Proprietario profile" });
-            }
+  // ===============================
+  // CREATE OWNER PROFILE
+  // ===============================
+  createProfile: async (req, res) => {
+    try {
+      const { id_utilizador, role } = req.user;
 
-            const { nome, email, telefone, nif } = req.body;
+      if (role !== "proprietario") {
+        return res.status(403).json({
+          error: "Only owner accounts can create a Proprietario profile"
+        });
+      }
 
-            if (!nome || !email) {
-                return res.status(400).json({ error: "Nome and Email are required" });
-            }
+      const { nome, email, telefone, nif } = req.body;
 
-            // Ver se já existe perfil
-            const existing = await ProprietarioModel.findByUserId(id);
-            if (existing) {
-                return res.status(400).json({ error: "Profile already exists for this user" });
-            }
+      if (!nome || !email) {
+        return res.status(400).json({
+          error: "Nome and Email are required"
+        });
+      }
 
-            const novoProprietario = await ProprietarioModel.create({
-                idUtilizador: id,
-                nome,
-                email,
-                telefone,
-                nif
-            });
+      const existing = await ProprietarioModel.findByUserId(id_utilizador);
+      if (existing) {
+        return res.status(400).json({
+          error: "Profile already exists"
+        });
+      }
 
-            return res.status(201).json({
-                message: "Proprietario profile created successfully",
-                proprietario: novoProprietario
-            });
+      const proprietario = await ProprietarioModel.create({
+        idUtilizador: id_utilizador,
+        nome,
+        email,
+        telefone,
+        nif
+      });
 
-        } catch (error) {
-            console.error(error);
-            return res.status(500).json({ error: "Error creating Proprietario profile" });
-        }
-    },
+      return res.status(201).json({
+        message: "Owner profile created",
+        proprietario
+      });
 
-    // Obter perfil do proprietário autenticado
-    getMyProfile: async (req, res) => {
-        try {
-            const { id, tipoUser } = req.user;
-
-            if (tipoUser !== 2) {
-                return res.status(403).json({ error: "Only owner accounts can access this resource" });
-            }
-
-            const proprietario = await ProprietarioModel.getByUserId(id);
-
-            if (!proprietario) {
-                return res.status(404).json({ error: "Proprietario profile not found" });
-            }
-
-            return res.json(proprietario);
-        } catch (error) {
-            console.error(error);
-            return res.status(500).json({ error: "Error fetching Proprietario profile" });
-        }
-    },
-
-    // (Opcional) listar todos os proprietários – só para admin
-    getAll: async (req, res) => {
-        try {
-            const { tipoUser } = req.user;
-
-            if (tipoUser !== 1) {
-                return res.status(403).json({ error: "Only admin can list all owners" });
-            }
-
-            const proprietarios = await ProprietarioModel.getAll();
-            return res.json(proprietarios);
-
-        } catch (error) {
-            console.error(error);
-            return res.status(500).json({ error: "Error fetching owners" });
-        }
+    } catch (err) {
+      console.error("Owner createProfile error:", err);
+      return res.status(500).json({
+        error: "Error creating owner profile"
+      });
     }
+  },
+
+  // ===============================
+  // GET MY OWNER PROFILE
+  // ===============================
+  getMe: async (req, res) => {
+    try {
+      const { id_utilizador, role } = req.user;
+
+      if (role !== "proprietario") {
+        return res.status(403).json({
+          error: "Only owner accounts can access this resource"
+        });
+      }
+
+      const proprietario = await ProprietarioModel.findByUserId(id_utilizador);
+
+      if (!proprietario) {
+        return res.json({ exists: false });
+      }
+
+      return res.json({
+        exists: true,
+        proprietario
+      });
+
+    } catch (err) {
+      console.error("Owner getMe error:", err);
+      return res.status(500).json({
+        error: "Error fetching owner profile"
+      });
+    }
+  }
 };
 
 module.exports = ProprietarioController;

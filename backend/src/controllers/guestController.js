@@ -1,4 +1,5 @@
 const GuestModel = require("../models/guestModel");
+const AuthModel = require("../models/authModel");
 
 const GuestController = {
 
@@ -7,13 +8,16 @@ const GuestController = {
   // ===============================
   getMe: async (req, res) => {
     try {
-      const { email, role } = req.user;
+      const { role } = req.user;
 
       if (role !== "guest") {
         return res.status(403).json({ error: "Not a guest account" });
       }
 
-      const guest = await GuestModel.findByEmail(email);
+      // 🔥 source of truth
+      const user = await AuthModel.findUserById(req.user.id_utilizador);
+
+      const guest = await GuestModel.findByEmail(user.username);
 
       if (!guest) {
         return res.json({ exists: false });
@@ -22,8 +26,8 @@ const GuestController = {
       return res.json({ exists: true, guest });
 
     } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: "Error fetching guest profile" });
+      console.error("Guest getMe error:", err);
+      return res.status(500).json({ error: "Error fetching guest profile" });
     }
   },
 
@@ -32,26 +36,40 @@ const GuestController = {
   // ===============================
   createProfile: async (req, res) => {
     try {
-      const { role } = req.user;
+      const { role, id_utilizador } = req.user;
 
       if (role !== "guest") {
         return res.status(403).json({ error: "Not a guest account" });
       }
 
-      const { nome, email, telefone, nif } = req.body;
+      // 🔥 buscar SEMPRE o user real
+      const user = await AuthModel.findUserById(id_utilizador);
+
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      const { telefone, nif } = req.body;
+
+      if (!telefone) {
+        return res.status(400).json({ error: "Phone is required" });
+      }
 
       const guest = await GuestModel.create({
-        nome,
-        email,
+        nome: user.nome,           // ✅ NUNCA NULL
+        email: user.username,      // ✅ email real
         telefone,
         nif
       });
 
-      res.status(201).json({ message: "Guest profile created", guest });
+      return res.status(201).json({
+        exists: true,
+        guest
+      });
 
     } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: "Error creating guest profile" });
+      console.error("Guest createProfile error:", err);
+      return res.status(500).json({ error: "Error creating guest profile" });
     }
   }
 };

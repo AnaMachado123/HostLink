@@ -17,6 +17,7 @@ app.use("/pedidos", require("./routes/pedidosRoutes"));
 app.use("/servicos-executados", require("./routes/servicosExecutadosRoutes"));
 app.use("/admin", require("./routes/adminRoutes"));
 app.use("/guests", require("./routes/guestRoutes"));
+app.use("/proprietarios", require("./routes/proprietarioRoutes"));
 
 
 // Rota principal
