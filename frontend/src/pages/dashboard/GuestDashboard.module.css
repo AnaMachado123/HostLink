@@ -1,35 +1,49 @@
 .card {
-  max-width: 900px;
+  max-width: 720px;
   background: #e5e4e2;
-  border-radius: 26px;
-  padding: 44px;
-  box-shadow: 0 18px 40px rgba(0,0,0,0.25);
+  padding: 48px;
+  border-radius: 28px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
 }
 
 .title {
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 700;
   color: #0A2344;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 .text {
-  font-size: 15px;
-  color: #2b2b2b;
-  line-height: 1.6;
+  font-size: 16px;
+  color: #000;
   margin-bottom: 12px;
 }
 
+.subtext {
+  font-size: 15px;
+  color: #0A2344;
+  font-weight: 500;
+  margin: 18px 0 26px 0;
+}
+
 .cta {
-  margin-top: 28px;
   height: 48px;
-  padding: 0 26px;
-  border-radius: 14px;
-  border: none;
-  background: #0A2344;
+  padding: 0 28px;
+  background-color: #0A2344;
   color: white;
+  border: none;
+  border-radius: 12px;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 8px 22px rgba(0,0,0,0.35);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  transition: transform 0.12s ease;
+}
+
+.cta:hover {
+  transform: translateY(-1px);
+}
+
+.cta:active {
+  transform: scale(0.97);
 }

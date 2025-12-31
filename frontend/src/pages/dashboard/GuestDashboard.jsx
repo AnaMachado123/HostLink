@@ -7,8 +7,12 @@ export default function GuestDashboard() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
-  const [guestExiste, setGuestExiste] = useState(false);
+  // null = loading | false = não existe | true = existe
+  const [guestExiste, setGuestExiste] = useState(null);
 
+  // ------------------------------------
+  // CHECK GUEST PROFILE
+  // ------------------------------------
   useEffect(() => {
     async function checkGuest() {
       try {
@@ -17,9 +21,7 @@ export default function GuestDashboard() {
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
-        if (res.data.exists) {
-          setGuestExiste(true);
-        }
+        setGuestExiste(res.data.exists === true);
       } catch {
         setGuestExiste(false);
       }
@@ -28,18 +30,50 @@ export default function GuestDashboard() {
     checkGuest();
   }, [token]);
 
+  // evita flicker
+  if (guestExiste === null) return null;
+
+  // ------------------------------------
+  // RENDER
+  // ------------------------------------
   return (
     <div className={styles.card}>
-      <h2>Guest Dashboard</h2>
-      <p>Welcome to HostLink.</p>
+      <h2 className={styles.title}>Guest Dashboard</h2>
 
-      {!guestExiste && (
-        <button
-          className={styles.cta}
-          onClick={() => navigate("/dashboard/guest/profile")}
-        >
-          Complete your profile
-        </button>
+      {!guestExiste ? (
+        <>
+          <p className={styles.text}>
+            Welcome to HostLink.
+          </p>
+
+          <p className={styles.subtext}>
+            Please complete your profile to start using all platform features.
+          </p>
+
+          <button
+            className={styles.cta}
+            onClick={() => navigate("/dashboard/guest/profile")}
+          >
+            Complete your profile
+          </button>
+        </>
+      ) : (
+        <>
+          <p className={styles.text}>
+            ✅ Profile submitted successfully.
+          </p>
+
+          <p className={styles.subtext}>
+            You can now use all platform features.
+          </p>
+
+          <button
+            className={styles.cta}
+            onClick={() => navigate("/dashboard/guest/profile")}
+          >
+            Edit profile
+          </button>
+        </>
       )}
     </div>
   );
