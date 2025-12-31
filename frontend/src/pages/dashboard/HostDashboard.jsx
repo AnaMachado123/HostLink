@@ -12,36 +12,56 @@ export default function HostDashboard() {
   const role = user?.role;
   const token = localStorage.getItem("token");
 
+  // ================= EMPRESA (NÃO TOCAR) =================
   const [empresaExiste, setEmpresaExiste] = useState(false);
-  const [guestExiste, setGuestExiste] = useState(false);
+  const [empresaStatus, setEmpresaStatus] = useState(null);
+
+  // ================= PROPRIETÁRIO =================
+  const [proprietarioExiste, setProprietarioExiste] = useState(false);
+  const [proprietarioStatus, setProprietarioStatus] = useState(null);
+
+  const [loadingProfile, setLoadingProfile] = useState(true);
 
   // ---------------------------------------------
-  // CHECK SETUP (empresa / guest)
+  // CHECK PROFILE
   // ---------------------------------------------
   useEffect(() => {
-    async function checkProfile() {
+    async function checkProfiles() {
       try {
+        // ---------- EMPRESA (intacto) ----------
         if (role === "empresa") {
           const res = await axios.get(
             "http://localhost:5000/empresas/me",
             { headers: { Authorization: `Bearer ${token}` } }
           );
-          setEmpresaExiste(res.data.exists === true);
+
+          if (res.data.exists && res.data.empresa) {
+            setEmpresaExiste(true);
+            setEmpresaStatus(res.data.empresa.status);
+          }
         }
 
-        if (role === "guest") {
+        // ---------- PROPRIETÁRIO ----------
+        if (role === "proprietario") {
           const res = await axios.get(
-            "http://localhost:5000/guests/me",
+            "http://localhost:5000/proprietarios/me",
             { headers: { Authorization: `Bearer ${token}` } }
           );
-          setGuestExiste(res.data.exists === true);
+
+          if (res.data.exists && res.data.proprietario) {
+            setProprietarioExiste(true);
+            setProprietarioStatus(res.data.proprietario.status);
+          }
         }
+
       } catch (err) {
-        console.error("Erro ao verificar profile", err);
+        console.error("Erro ao verificar profiles", err);
+      } finally {
+        setLoadingProfile(false);
       }
     }
 
-    checkProfile();
+    checkProfiles();
   }, [role, token]);
 
   // ---------------------------------------------
@@ -52,12 +72,13 @@ export default function HostDashboard() {
     navigate("/");
   }
 
+  if (loadingProfile) return null;
+
   // ---------------------------------------------
   // RENDER
   // ---------------------------------------------
   return (
     <div className={styles.page}>
-      {/* SIDEBAR */}
       <aside className={styles.sidebar}>
         <div className={styles.top}>
           {/* LOGO */}
@@ -80,7 +101,30 @@ export default function HostDashboard() {
               Dashboard
             </NavLink>
 
-            {/* PROFILE */}
+            {/* ================= GUEST (INTACTO) ================= */}
+            {role === "guest" && (
+              <>
+                <NavLink
+                  to="/dashboard/guest/profile"
+                  className={({ isActive }) =>
+                    isActive ? styles.active : styles.link
+                  }
+                >
+                  Profile
+                </NavLink>
+
+                <NavLink
+                  to="/dashboard/guest/reviews"
+                  className={({ isActive }) =>
+                    isActive ? styles.active : styles.link
+                  }
+                >
+                  Reviews
+                </NavLink>
+              </>
+            )}
+
+            {/* ================= EMPRESA (INTACTO) ================= */}
             {role === "empresa" && (
               <div className={styles.navItem}>
                 <NavLink
@@ -98,10 +142,26 @@ export default function HostDashboard() {
               </div>
             )}
 
-            {role === "guest" && (
+            {role === "empresa" && (
+              empresaExiste && empresaStatus === "approved" ? (
+                <NavLink
+                  to="/dashboard/empresa/services"
+                  className={({ isActive }) =>
+                    isActive ? styles.active : styles.link
+                  }
+                >
+                  Services
+                </NavLink>
+              ) : (
+                <span className={styles.linkDisabled}>Services</span>
+              )
+            )}
+
+            {/* ================= PROPRIETÁRIO ================= */}
+            {role === "proprietario" && (
               <div className={styles.navItem}>
                 <NavLink
-                  to="/dashboard/guest/profile"
+                  to="/dashboard/proprietario/profile"
                   className={({ isActive }) =>
                     isActive ? styles.active : styles.link
                   }
@@ -109,38 +169,39 @@ export default function HostDashboard() {
                   Profile
                 </NavLink>
 
-                {!guestExiste && (
+                {!proprietarioExiste && (
                   <span className={styles.profileBadge}>SETUP</span>
                 )}
               </div>
             )}
 
-            {/* REVIEWS — guest */}
-            {role === "guest" && (
-              <NavLink
-                to="/dashboard/guest/reviews"
-                className={({ isActive }) =>
-                  isActive ? styles.active : styles.link
-                }
-              >
-                Reviews
-              </NavLink>
+            {role === "proprietario" && (
+              proprietarioExiste && proprietarioStatus === "approved" ? (
+                <NavLink
+                  to="/dashboard/proprietario/properties"
+                  className={({ isActive }) =>
+                    isActive ? styles.active : styles.link
+                  }
+                >
+                  Properties
+                </NavLink>
+              ) : (
+                <span className={styles.linkDisabled}>Properties</span>
+              )
             )}
 
-            {/* REQUESTS — bloqueado por agora */}
+            {/* REQUESTS */}
             {(role === "empresa" || role === "proprietario") && (
               <span className={styles.linkDisabled}>Requests</span>
             )}
           </nav>
         </div>
 
-        {/* LOGOUT */}
         <button className={styles.logout} onClick={handleLogout}>
           Logout
         </button>
       </aside>
 
-      {/* MAIN */}
       <div className={styles.main}>
         <Header role={role} />
         <main className={styles.content}>
