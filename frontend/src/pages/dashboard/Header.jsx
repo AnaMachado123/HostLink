@@ -6,44 +6,39 @@ export default function Header({ role }) {
   const [displayName, setDisplayName] = useState("Account");
 
   useEffect(() => {
-    async function fetchProfile() {
-      try {
-        const token = localStorage.getItem("token");
-        const user = JSON.parse(localStorage.getItem("user"));
-        if (!token) return;
+    async function loadHeader() {
+      const token = localStorage.getItem("token");
+      if (!token) return;
 
+      try {
+        // 🔹 SEMPRE buscar o utilizador base
+        const authRes = await axios.get("http://localhost:5000/auth/me", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        let name = authRes.data.nome;
+
+        // 🔹 empresa → tenta nome da empresa
         if (role === "empresa") {
-          const res = await axios.get(
+          const empresaRes = await axios.get(
             "http://localhost:5000/empresas/me",
-            {
-              headers: {
-                Authorization: `Bearer ${token}`
-              }
-            }
+            { headers: { Authorization: `Bearer ${token}` } }
           );
 
-          if (res.data?.nome) {
-            setDisplayName(res.data.nome);
-          } else {
-            setDisplayName(user?.nome || "Service Company account");
+          if (empresaRes.data?.empresa?.nome) {
+            name = empresaRes.data.empresa.nome;
           }
         }
 
-        if (role === "proprietario") {
-          setDisplayName(user?.nome || "Property Owner account");
-        }
-
-        if (role === "guest") {
-          setDisplayName(user?.nome || "Guest account");
-        }
+        setDisplayName(name);
 
       } catch (err) {
-        console.error("Error loading header info", err);
+        console.error("Header load error", err);
         setDisplayName("Account");
       }
     }
 
-    fetchProfile();
+    loadHeader();
   }, [role]);
 
   return (

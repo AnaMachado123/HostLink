@@ -53,7 +53,6 @@ export default function Login() {
     try {
       toast.info("Checking credentials...", { autoClose: 1000 });
 
-      // ✅ CORREÇÃO AQUI (endpoint)
       const res = await api.post("/login", {
         username: email,
         password,
@@ -63,22 +62,26 @@ export default function Login() {
 
       const { token, user } = res.data;
 
-      // guardar sessão
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
+// 🔒 limpa lixo antigo (CRÍTICO)
+localStorage.clear();
 
-      // redirecionar por role
-      setTimeout(() => {
-        if (user.role === "proprietario") {
-          navigate("/dashboard/proprietario");
-        } else if (user.role === "empresa") {
-          navigate("/dashboard/empresa");
-        } else if (user.role === "guest") {
-          navigate("/dashboard/guest");
-        } else {
-          navigate("/");
-        }
-      }, 1300);
+// guarda sessão base
+localStorage.setItem("token", token);
+localStorage.setItem(
+  "user",
+  JSON.stringify({
+    id_utilizador: user.id_utilizador,
+    role: user.role,
+    nome: user.nome,     // ✅ necessário para header inicial
+    email: user.email    // ✅ necessário para prefill
+  })
+);
+
+// redirect por role
+setTimeout(() => {
+  navigate(`/dashboard/${user.role}`);
+}, 800);
+
 
     } catch (err) {
       console.error(err);
@@ -94,7 +97,6 @@ export default function Login() {
     <div className={styles.page}>
       <ToastContainer position="top-right" newestOnTop />
 
-      {/* LEFT SIDE */}
       <div className={styles.leftSide}>
         <div className={styles.iconCircle}>
           <img src={homeIcon} className={styles.iconImg} alt="logo" />
@@ -106,7 +108,6 @@ export default function Login() {
         </p>
       </div>
 
-      {/* RIGHT SIDE */}
       <div className={styles.rightSide}>
         <form className={styles.loginCard} onSubmit={handleSubmit}>
           <h2 className={styles.cardTitle}>
@@ -119,7 +120,6 @@ export default function Login() {
               : "Sign in to HostLink"}
           </p>
 
-          {/* EMAIL */}
           <label className={styles.label}>Email</label>
           <input
             className={`${styles.input} ${
@@ -131,7 +131,6 @@ export default function Login() {
           />
           {emailError && <p className={styles.error}>{emailError}</p>}
 
-          {/* PASSWORD */}
           <label className={styles.label}>Password</label>
           <input
             type="password"
@@ -150,19 +149,16 @@ export default function Login() {
 
           {passwordError && <p className={styles.error}>{passwordError}</p>}
 
-          {/* FORGOT PASSWORD */}
           <div className={styles.forgotWrapper}>
             <a className={styles.forgot} href="/forgot-password">
               Forgot password?
             </a>
           </div>
 
-          {/* BUTTON */}
           <button type="submit" className={styles.button}>
             Sign in
           </button>
 
-          {/* REGISTER */}
           <p className={styles.bottomText}>
             Don’t have an account?{" "}
             <Link to="/register" className={styles.createLink}>
