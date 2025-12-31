@@ -25,19 +25,16 @@ export default function CompleteCompanyProfile() {
   // ---------------------------------------------
   // LOAD DATA
   // ---------------------------------------------
-  useEffect(() => {
+ useEffect(() => {
   async function loadData() {
     const token = localStorage.getItem("token");
 
     try {
+      // 1️⃣ tenta empresa
       const empresaRes = await axios.get(
         "http://localhost:5000/empresas/me",
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-
-      console.log("EMPRESA:", empresaRes.data.empresa);
 
       if (empresaRes.data.exists && empresaRes.data.empresa) {
         setEmpresaExiste(true);
@@ -54,8 +51,20 @@ export default function CompleteCompanyProfile() {
         return;
       }
 
+      // 2️⃣ empresa não existe → usa auth/me
+      const userRes = await axios.get(
+        "http://localhost:5000/auth/me",
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setForm((prev) => ({
+        ...prev,
+        nome: userRes.data.nome,
+        email: userRes.data.email
+      }));
+
     } catch (err) {
-      console.error("Erro ao carregar dados", err);
+      console.error("Erro ao carregar company profile", err);
     }
   }
 
