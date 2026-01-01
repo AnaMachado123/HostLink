@@ -1,25 +1,43 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
-function App() {
+import AdminLogin from "./pages/AdminLogin";
+import AdminDashboard from "./pages/AdminDashboard";
+import ManageUsers from "./pages/ManageUsers";
+import ManageCompanies from "./pages/ManageCompanies";
+import ManageServices from "./pages/ManageServices";
+import ReviewUser from "./pages/ReviewUser";
+
+
+import ProtectedRoute from "./components/ProtectedRoute";
+
+export default function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+    <BrowserRouter>
+      <Routes>
+        {/* default */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
+
+        {/* login */}
+        <Route path="/login" element={<AdminLogin />} />
+
+        {/* admin area protegida */}
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
         >
-          Learn React
-        </a>
-      </header>
-    </div>
+          <Route path="users" element={<ManageUsers />} />
+          <Route path="companies" element={<ManageCompanies />} />
+          <Route path="services" element={<ManageServices />} />
+          <Route path="users/:id" element={<ReviewUser />} />
+        </Route>
+
+        {/* fallback */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
-
-export default App;

@@ -4,6 +4,9 @@ import axios from "axios";
 import styles from "./EmpresaDashboard.module.css";
 
 export default function EmpresaDashboard() {
+  const user = JSON.parse(localStorage.getItem("user"));
+  const userStatus = user?.status; // PENDING | ACTIVE | REJECTED
+
   const navigate = useNavigate();
   const [empresa, setEmpresa] = useState(null);
 
@@ -53,7 +56,7 @@ export default function EmpresaDashboard() {
         </>
       )}
 
-      {empresa && (
+      {empresa && userStatus === "PENDING" && (
         <>
           <p className={styles.subtext}>
             ⏳ <strong>Under review</strong>
@@ -64,11 +67,39 @@ export default function EmpresaDashboard() {
           </p>
 
           <p className={styles.text}>
-            An administrator is reviewing your information. You will gain full
-            access once your account is approved.
+            An administrator is reviewing your information.
           </p>
         </>
       )}
+
+      {empresa && userStatus === "ACTIVE" && (
+        <>
+          <p className={styles.subtext}>
+            ✅ <strong>Account approved</strong>
+          </p>
+
+          <p className={styles.text}>
+      Your account has been approved.
+          </p>
+
+          <p className={styles.text}>
+            You can now manage your services and requests.
+          </p>
+        </>
+      )}
+
+      {empresa && userStatus === "REJECTED" && (
+        <>
+          <p className={styles.subtext}>
+            ❌ <strong>Account rejected</strong>
+          </p>
+
+          <p className={styles.text}>
+            Your account was rejected by the administrator.
+          </p>
+        </>
+      )}
+
     </div>
   );
-}
+      }

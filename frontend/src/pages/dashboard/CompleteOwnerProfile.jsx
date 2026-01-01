@@ -1,184 +1,188 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import styles from "./CompleteOwnerProfile.module.css";
 import completeIcon from "../../assets/icons/complete-profile.png";
 
-export default function ProprietarioProfile() {
+export default function CompleteOwnerProfile() {
+  const navigate = useNavigate();
   const token = localStorage.getItem("token");
-  const user = JSON.parse(localStorage.getItem("user"));
-
-  const [loading, setLoading] = useState(true);
-  const [existe, setExiste] = useState(false);
-  const [proprietario, setProprietario] = useState(null);
 
   const [form, setForm] = useState({
-    nome: user?.nome || "",
-    email: user?.email || "", // ✅ FIX AQUI
+    nome: "",
+    email: "",
     telefone: "",
     nif: ""
   });
 
   const [errors, setErrors] = useState({});
+  const [ownerExiste, setOwnerExiste] = useState(false);
+  const [status, setStatus] = useState(null); // PENDING | ACTIVE | REJECTED
 
-  // ===============================
-  // CHECK OWNER PROFILE
-  // ===============================
+  // ---------------------------------------------
+  // LOAD DATA
+  // ---------------------------------------------
   useEffect(() => {
-    async function fetchProfile() {
+    async function loadData() {
       try {
+        // 1️⃣ tenta proprietário
         const res = await axios.get(
           "http://localhost:5000/proprietarios/me",
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
-        if (res.data.exists) {
-          setExiste(true);
-          setProprietario(res.data.proprietario);
+        if (res.data.exists && res.data.proprietario) {
+          setOwnerExiste(true);
+          setStatus(res.data.proprietario.status);
+
+          setForm({
+            nome: res.data.proprietario.nome,
+            email: res.data.proprietario.email,
+            telefone: res.data.proprietario.telefone || "",
+            nif: res.data.proprietario.nif || ""
+          });
+          return;
         }
+
+        // 2️⃣ não existe → usa auth/me
+        const userRes = await axios.get(
+          "http://localhost:5000/auth/me",
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        setForm((prev) => ({
+          ...prev,
+          nome: userRes.data.nome,
+          email: userRes.data.email
+        }));
+
       } catch (err) {
-        setExiste(false);
-      } finally {
-        setLoading(false);
+        console.error("Erro ao carregar owner profile", err);
       }
     }
 
-    fetchProfile();
+    loadData();
   }, [token]);
 
-  // ===============================
-  // FORM HANDLERS
-  // ===============================
+  // ---------------------------------------------
+  // HANDLE INPUT
+  // ---------------------------------------------
   function handleChange(e) {
     const { name, value } = e.target;
 
-    if ((name === "telefone" || name === "nif") && !/^\d*$/.test(value)) return;
-    if ((name === "telefone" || name === "nif") && value.length > 9) return;
+    // 🔒 bloqueia se existir e não estiver REJECTED
+    if (ownerExiste && status !== "REJECTED") return;
 
-    setForm({ ...form, [name]: value });
-    setErrors({ ...errors, [name]: "" });
+    if ((name === "telefone" || name === "nif") &&
+        (!/^\d*$/.test(value) || value.length > 9)) return;
+
+    setForm((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: "" }));
   }
 
+  // ---------------------------------------------
+  // SUBMIT
+  // ---------------------------------------------
   async function handleSubmit(e) {
     e.preventDefault();
 
     const newErrors = {};
-    if (form.telefone.length !== 9) newErrors.telefone = "Phone must have 9 digits";
-    if (form.nif.length !== 9) newErrors.nif = "NIF must have 9 digits";
+    if (!form.nome) newErrors.nome = "Name is required.";
+    if (!form.email) newErrors.email = "Email is required.";
+    if (form.telefone.length !== 9) newErrors.telefone = "Phone must have 9 digits.";
+    if (form.nif.length !== 9) newErrors.nif = "NIF must have 9 digits.";
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
 
-    await axios.post(
-      "http://localhost:5000/proprietarios/profile",
-      form,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
+    try {
+      await axios.post(
+        "http://localhost:5000/proprietarios/profile",
+        {
+          nome: form.nome,
+          email: form.email,
+          telefone: form.telefone,
+          nif: form.nif
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-    // 🔁 igual à empresa
-    window.location.reload();
+      navigate("/dashboard/proprietario");
+    } catch (err) {
+      console.error(err);
+    }
   }
 
-  if (loading) return null;
+  const readOnly = ownerExiste && status !== "REJECTED";
 
-  // ===============================
-  // READ-ONLY PROFILE (APÓS SUBMIT)
-  // ===============================
-  if (existe && proprietario) {
-    return (
-      <div className={styles.page}>
-        <div className={styles.card}>
+  // ---------------------------------------------
+  // RENDER
+  // ---------------------------------------------
+  return (
+    <div className={styles.wrapper}>
+      <div className={styles.card}>
+
+        {ownerExiste && status === "PENDING" && (
+          <div className={styles.infoBox}>
+            ⏳ <strong>Profile submitted</strong>
+            <p>Your property owner profile is under review.</p>
+          </div>
+        )}
+
+        {ownerExiste && status === "REJECTED" && (
+          <div className={styles.infoBoxError}>
+            ❌ <strong>Profile rejected</strong>
+            <p>You may update your information and resubmit.</p>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit}>
           <div className={styles.header}>
             <div className={styles.iconCircle}>
-              <img src={completeIcon} alt="Profile" />
+              <img src={completeIcon} alt="Owner profile" />
             </div>
 
             <div>
-              <h1>Property owner profile</h1>
-              <p>Your profile is under review.</p>
+              <h1>Property Owner Profile</h1>
+              <p>
+                {ownerExiste
+                  ? "This is your submitted profile information."
+                  : "Please provide your property owner details."}
+              </p>
             </div>
           </div>
 
           <div className={styles.grid}>
-            <div className={styles.full}>
-              <label>Name</label>
-              <input value={proprietario.nome} disabled />
-            </div>
-
-            <div className={styles.full}>
-              <label>Email</label>
-              <input value={proprietario.email} disabled />
-            </div>
-
-            <div>
-              <label>Phone</label>
-              <input value={proprietario.telefone} disabled />
-            </div>
-
-            <div>
-              <label>NIF</label>
-              <input value={proprietario.nif} disabled />
-            </div>
+            {[
+              ["Name", "nome"],
+              ["Email", "email"],
+              ["Phone", "telefone"],
+              ["NIF", "nif"]
+            ].map(([label, name]) => (
+              <div key={name} className={styles.full}>
+                <label>{label}</label>
+                <input
+                  name={name}
+                  value={form[name]}
+                  disabled={readOnly}
+                  onChange={handleChange}
+                />
+                {errors[name] && (
+                  <p className={styles.error}>{errors[name]}</p>
+                )}
+              </div>
+            ))}
           </div>
-        </div>
+
+          {(!ownerExiste || status === "REJECTED") && (
+            <button className={styles.submit}>
+              Submit profile
+            </button>
+          )}
+        </form>
       </div>
-    );
-  }
-
-  // ===============================
-  // FORM (PRIMEIRA VEZ)
-  // ===============================
-  return (
-    <div className={styles.page}>
-      <form className={styles.card} onSubmit={handleSubmit}>
-        <div className={styles.header}>
-          <div className={styles.iconCircle}>
-            <img src={completeIcon} alt="Complete profile" />
-          </div>
-
-          <div>
-            <h1>Complete your property owner profile</h1>
-            <p>Your account will be reviewed by an administrator.</p>
-          </div>
-        </div>
-
-        <div className={styles.grid}>
-          <div className={styles.full}>
-            <label>Name</label>
-            <input value={form.nome} disabled />
-          </div>
-
-          <div className={styles.full}>
-            <label>Email</label>
-            <input value={form.email} disabled />
-          </div>
-
-          <div>
-            <label>Phone</label>
-            <input
-              name="telefone"
-              value={form.telefone}
-              onChange={handleChange}
-              className={errors.telefone ? styles.inputError : ""}
-            />
-            {errors.telefone && <p className={styles.error}>{errors.telefone}</p>}
-          </div>
-
-          <div>
-            <label>NIF</label>
-            <input
-              name="nif"
-              value={form.nif}
-              onChange={handleChange}
-              className={errors.nif ? styles.inputError : ""}
-            />
-            {errors.nif && <p className={styles.error}>{errors.nif}</p>}
-          </div>
-        </div>
-
-        <button className={styles.submit}>Submit profile</button>
-      </form>
     </div>
   );
 }

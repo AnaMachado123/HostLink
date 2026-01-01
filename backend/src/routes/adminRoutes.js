@@ -12,6 +12,13 @@ router.get(
   adminController.getPendingUsers
 );
 
+router.get(
+  "/users/:id",
+  authMiddleware,
+  isAdmin,
+  adminController.getUserDetails
+);
+
 router.post(
   "/users/:id/approve",
   authMiddleware,
@@ -25,5 +32,6 @@ router.post(
   isAdmin,
   adminController.rejectUser
 );
+
 
 module.exports = router;

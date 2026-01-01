@@ -7,12 +7,11 @@ export default function ProprietarioDashboard() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
-  const [ownerExiste, setOwnerExiste] = useState(null); // null = loading
-  const [ownerStatus, setOwnerStatus] = useState(null); // pending | approved
+  const user = JSON.parse(localStorage.getItem("user"));
+  const userStatus = user?.status; // PENDING | ACTIVE | REJECTED
 
-  // ---------------------------------------------
-  // CHECK OWNER PROFILE
-  // ---------------------------------------------
+  const [ownerExiste, setOwnerExiste] = useState(null);
+
   useEffect(() => {
     async function checkOwner() {
       try {
@@ -20,16 +19,8 @@ export default function ProprietarioDashboard() {
           "http://localhost:5000/proprietarios/me",
           { headers: { Authorization: `Bearer ${token}` } }
         );
-
-        if (res.data.exists) {
-          setOwnerExiste(true);
-          setOwnerStatus(res.data.proprietario.status);
-        } else {
-          setOwnerExiste(false);
-          setOwnerStatus(null);
-        }
-      } catch (err) {
-        console.error("Erro ao verificar proprietário", err);
+        setOwnerExiste(res.data.exists === true);
+      } catch {
         setOwnerExiste(false);
       }
     }
@@ -37,12 +28,8 @@ export default function ProprietarioDashboard() {
     checkOwner();
   }, [token]);
 
-  // evita flicker
   if (ownerExiste === null) return null;
 
-  // ---------------------------------------------
-  // RENDER
-  // ---------------------------------------------
   return (
     <div className={styles.card}>
       <h2 className={styles.title}>Property Owner Dashboard</h2>
@@ -52,11 +39,9 @@ export default function ProprietarioDashboard() {
           <p className={styles.text}>
             Welcome to your property owner dashboard.
           </p>
-
           <p className={styles.subtext}>
             To continue, please complete your profile.
           </p>
-
           <button
             className={styles.cta}
             onClick={() => navigate("/dashboard/proprietario/profile")}
@@ -66,26 +51,35 @@ export default function ProprietarioDashboard() {
         </>
       )}
 
-      {ownerExiste && ownerStatus === "pending" && (
+      {ownerExiste && userStatus === "PENDING" && (
         <>
           <p className={styles.text}>
-            ⏳ <strong>Profile submitted</strong>
+            ⏳ <strong>Under review</strong>
           </p>
-
           <p className={styles.subtext}>
-            Your account is under review by an administrator.
+            Your profile has been submitted and is being reviewed.
           </p>
         </>
       )}
 
-      {ownerExiste && ownerStatus === "approved" && (
+      {ownerExiste && userStatus === "ACTIVE" && (
         <>
           <p className={styles.text}>
-            ✅ Your account has been approved.
+            ✅ <strong>Account approved</strong>
           </p>
-
           <p className={styles.subtext}>
-            You can now manage your properties and requests.
+            You can now manage your properties and service requests.
+          </p>
+        </>
+      )}
+
+      {ownerExiste && userStatus === "REJECTED" && (
+        <>
+          <p className={styles.text}>
+            ❌ <strong>Account rejected</strong>
+          </p>
+          <p className={styles.subtext}>
+            Please contact support for more information.
           </p>
         </>
       )}

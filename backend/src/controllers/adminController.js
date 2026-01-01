@@ -1,17 +1,50 @@
 const crypto = require("crypto");
 const adminModel = require("../models/adminModel");
 const sendActivationEmail = require("../utils/emailService");
-
+const EmpresaModel = require("../models/empresaModel");
+const ProprietarioModel = require("../models/proprietarioModel");
 
 exports.getPendingUsers = async (req, res) => {
   try {
-    const users = await adminModel.getUsersByStatus("PENDING");
+    const users = await adminModel.getPendingUsers();
     res.json(users);
   } catch (err) {
     res.status(500).json({ message: "Error fetching users" });
   }
 };
 
+// ===============================
+// GET USER + PROFILE DETAILS
+// ===============================
+exports.getUserDetails = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const user = await adminModel.getUserById(id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    let profile = null;
+
+    if (user.role === "empresa") {
+      profile = await EmpresaModel.findByUserId(id);
+    }
+
+    if (user.role === "proprietario") {
+      profile = await ProprietarioModel.findByUserId(id);
+    }
+
+    res.json({ user, profile });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error loading user details" });
+  }
+};
+
+// ===============================
+// APPROVE USER
+// ===============================
 exports.approveUser = async (req, res) => {
   const { id } = req.params;
 
@@ -22,7 +55,7 @@ exports.approveUser = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    if (user.status !== "PENDING") {
+    if (user.status.toUpperCase() !== "PENDING") {
       return res.status(400).json({
         message: "Only PENDING users can be approved",
       });
@@ -32,7 +65,7 @@ exports.approveUser = async (req, res) => {
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
     await adminModel.approveUser(id, token, expiresAt);
-    await sendActivationEmail(user.username, token);
+    await sendActivationEmail(user.email, token);
 
     res.json({ message: "User approved successfully" });
   } catch (err) {
@@ -40,6 +73,9 @@ exports.approveUser = async (req, res) => {
   }
 };
 
+// ===============================
+// REJECT USER
+// ===============================
 exports.rejectUser = async (req, res) => {
   const { id } = req.params;
 
@@ -50,14 +86,13 @@ exports.rejectUser = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    if (user.status !== "PENDING") {
+    if (user.status.toUpperCase() !== "PENDING") {
       return res.status(400).json({
         message: "Only PENDING users can be rejected",
       });
     }
 
     await adminModel.rejectUser(id);
-
     res.json({ message: "User rejected successfully" });
   } catch (err) {
     res.status(500).json({ message: "Error rejecting user" });

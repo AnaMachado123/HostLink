@@ -10,6 +10,7 @@ export default function HostDashboard() {
 
   const user = JSON.parse(localStorage.getItem("user"));
   const role = user?.role;
+  const userStatus = user?.status;
   const token = localStorage.getItem("token");
 
   // ================= EMPRESA (NÃO TOCAR) =================
@@ -143,7 +144,7 @@ export default function HostDashboard() {
             )}
 
             {role === "empresa" && (
-              empresaExiste && empresaStatus === "approved" ? (
+              empresaExiste && userStatus === "ACTIVE" ? (
                 <NavLink
                   to="/dashboard/empresa/services"
                   className={({ isActive }) =>
@@ -176,7 +177,7 @@ export default function HostDashboard() {
             )}
 
             {role === "proprietario" && (
-              proprietarioExiste && proprietarioStatus === "approved" ? (
+              proprietarioExiste && userStatus === "ACTIVE" ? (
                 <NavLink
                   to="/dashboard/proprietario/properties"
                   className={({ isActive }) =>

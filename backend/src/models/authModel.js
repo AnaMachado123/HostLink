@@ -14,16 +14,18 @@ const AuthModel = {
   // -----------------------------------
   // CREATE USER (REGISTER)
   // -----------------------------------
-  createUser: async (nome, username, passwordHash, idTipoUser) => {
-    const query = `
-      INSERT INTO hostlink.utilizador (nome, username, password_hash, id_tipouser)
-      VALUES ($1, $2, $3, $4)
-      RETURNING id_utilizador, nome, username, id_tipouser;
-    `;
-    const values = [nome, username, passwordHash, idTipoUser];
-    const result = await pool.query(query, values);
-    return result.rows[0];
-  },
+  createUser: async (nome, username, passwordHash, idTipoUser, status) => {
+  const query = `
+    INSERT INTO hostlink.utilizador
+      (nome, username, password_hash, id_tipouser, status)
+    VALUES ($1, $2, $3, $4, $5)
+    RETURNING id_utilizador, nome, username, id_tipouser, status;
+  `;
+  const values = [nome, username, passwordHash, idTipoUser, status];
+  const result = await pool.query(query, values);
+  return result.rows[0];
+},
+
 
   // -----------------------------------
   // FIND USER BY ID (AUTH /me)

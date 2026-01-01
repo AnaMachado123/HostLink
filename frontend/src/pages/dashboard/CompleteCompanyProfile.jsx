@@ -81,7 +81,7 @@ export default function CompleteCompanyProfile() {
 
     if (name === "telefone" && (!/^\d*$/.test(value) || value.length > 9)) return;
     if (name === "nif" && (!/^\d*$/.test(value) || value.length > 9)) return;
-    if (name === "codPostal" && (!/^\d*$/.test(value) || value.length > 7)) return;
+    if (name === "codPostal" && (!/^\d{0,4}(-\d{0,3})?$/.test(value))) return;
     if (name === "nPorta" && !/^\d*$/.test(value)) return;
 
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -102,7 +102,9 @@ export default function CompleteCompanyProfile() {
     if (form.nif.length !== 9) newErrors.nif = "NIF must have 9 digits.";
     if (!form.rua.trim()) newErrors.rua = "Street is required.";
     if (!form.nPorta) newErrors.nPorta = "Door number is required.";
-    if (form.codPostal.length !== 7) newErrors.codPostal = "Postal code must have 7 digits.";
+    if (!/^\d{4}-\d{3}$/.test(form.codPostal)) {
+      newErrors.codPostal = "Postal code must be in format 1234-567.";
+    }
     if (!form.location.trim()) newErrors.location = "Location is required.";
 
     if (Object.keys(newErrors).length > 0) {

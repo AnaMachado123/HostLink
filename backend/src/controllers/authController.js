@@ -6,6 +6,7 @@ const AuthModel = require("../models/authModel");
 // ROLE MAPPING
 // =======================
 const ROLE_MAP = {
+  admin: 1,
   proprietario: 2,
   empresa: 3,
   guest: 4
@@ -13,6 +14,7 @@ const ROLE_MAP = {
 
 // Reverse mapping (CRITICAL for frontend & JWT)
 const ROLE_MAP_REVERSE = {
+  1: "admin",
   2: "proprietario",
   3: "empresa",
   4: "guest"
@@ -37,11 +39,18 @@ async function register(req, res) {
 
     const passwordHash = await bcrypt.hash(password, 10);
 
+    let status = "PENDING";
+
+    if (role === "guest") {
+      status = "ACTIVE";
+    }
+
     const newUser = await AuthModel.createUser(
       nome,
       username,
       passwordHash,
-      idTipoUser
+      idTipoUser,
+      status
     );
 
     return res.status(201).json({
@@ -92,6 +101,7 @@ async function login(req, res) {
       user: {
         id_utilizador: user.id_utilizador,
         role,
+        status: user.status,
         nome: user.nome,
         email: user.username // username = email
       }
