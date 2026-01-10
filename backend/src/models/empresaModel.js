@@ -4,7 +4,6 @@ const EmpresaModel = {
 
   // =======================================
   // GARANTE QUE O CÓDIGO POSTAL EXISTE
-  // (cria se não existir)
   // =======================================
   ensureCodigoPostalExists: async (codPostal, location) => {
     const exists = await pool.query(
@@ -24,30 +23,29 @@ const EmpresaModel = {
   },
 
   // =======================================
-  // GET EMPRESA BY USER  ✅ (COM LOCATION)
+  // GET EMPRESA BY USER  ✅ FIX FINAL
   // =======================================
-   findByUserId: async (idUtilizador) => {
-  const query = `
-    SELECT 
-      e.id_utilizador,
-      e.nome,
-      e.email,
-      e.telefone,
-      e.nif,
-      e.rua,
-      e.nporta,
-      e.cod_postal,
-      cp.localidade AS location
-    FROM empresa e
-    JOIN codpostal cp
-      ON e.cod_postal = cp.cod_postal
-    WHERE e.id_utilizador = $1
-  `;
+  findByUserId: async (idUtilizador) => {
+    const query = `
+      SELECT 
+        e.id_utilizador,
+        e.nome,
+        e.email,
+        e.telefone,
+        e.nif,
+        e.rua,
+        e.nporta,
+        e.cod_postal,
+        cp.localidade AS location
+      FROM empresa e
+      LEFT JOIN codpostal cp
+        ON e.cod_postal = cp.cod_postal
+      WHERE e.id_utilizador = $1
+    `;
 
-  const result = await pool.query(query, [idUtilizador]);
-  return result.rows[0];
-},
-
+    const result = await pool.query(query, [idUtilizador]);
+    return result.rows[0];
+  },
 
   // =======================================
   // CREATE EMPRESA

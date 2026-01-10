@@ -23,7 +23,7 @@ const EmpresaController = {
         rua,
         numero,
         codigo_postal,
-        location   // 🔥 AGORA LÊ location
+        location
       } = req.body;
 
       // --------- validações ----------
@@ -46,13 +46,13 @@ const EmpresaController = {
         });
       }
 
-      // 🔥 GARANTIR QUE O CÓDIGO POSTAL + LOCATION EXISTEM
+      // garante código postal + location
       await EmpresaModel.ensureCodigoPostalExists(
         codigo_postal,
         location
       );
 
-      // 🔥 CRIAR EMPRESA
+      // 🔥 CRIA A EMPRESA (COM location)
       const empresa = await EmpresaModel.create({
         idUtilizador: id_utilizador,
         nome: nome_empresa,
@@ -61,11 +61,13 @@ const EmpresaController = {
         nif,
         rua,
         nPorta: numero,
-        codPostal: codigo_postal
+        codPostal: codigo_postal,
+        location
       });
 
+      // ✅ DEVOLVE NO FORMATO DO GET
       return res.status(201).json({
-        message: "Company profile submitted for review",
+        exists: true,
         empresa
       });
 
