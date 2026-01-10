@@ -4,9 +4,6 @@ import axios from "axios";
 import styles from "./EmpresaDashboard.module.css";
 
 export default function EmpresaDashboard() {
-  const user = JSON.parse(localStorage.getItem("user"));
-  const userStatus = user?.status; // PENDING | ACTIVE | REJECTED
-
   const navigate = useNavigate();
   const [empresa, setEmpresa] = useState(null);
 
@@ -17,12 +14,10 @@ export default function EmpresaDashboard() {
 
         const res = await axios.get(
           "http://localhost:5000/empresas/me",
-          {
-            headers: { Authorization: `Bearer ${token}` }
-          }
+          { headers: { Authorization: `Bearer ${token}` } }
         );
 
-        if (res.data.exists) {
+        if (res.data.exists && res.data.empresa) {
           setEmpresa(res.data.empresa);
         }
       } catch (err) {
@@ -33,73 +28,60 @@ export default function EmpresaDashboard() {
     loadEmpresa();
   }, []);
 
+  // --------------------------------------------------
+  // 1️⃣ ONBOARDING — empresa ainda não existe
+  // --------------------------------------------------
+  if (!empresa) {
+    return (
+      <div className={styles.card}>
+        <h1 className={styles.title}>Company Dashboard</h1>
+
+        <p className={styles.text}>
+          Welcome to your company dashboard.
+        </p>
+
+        <p className={styles.subtext}>
+          To start using the platform, please complete your company profile.
+        </p>
+
+        <button
+          className={styles.cta}
+          onClick={() => navigate("/dashboard/empresa/profile")}
+        >
+          Complete company profile
+        </button>
+      </div>
+    );
+  }
+
+  // --------------------------------------------------
+  // 2️⃣ DASHBOARD — empresa já existe (OPÇÃO B)
+  // --------------------------------------------------
   return (
-    <div className={styles.card}>
-      <h2 className={styles.title}>Company Dashboard</h2>
+    <div className={styles.dashboard}>
+      <h1 className={styles.title}>Company Dashboard</h1>
 
-      {!empresa && (
-        <>
-          <p className={styles.text}>
-            Welcome to your company dashboard.
-          </p>
+      <p className={styles.subtitle}>
+        Manage your services and requests
+      </p>
 
-          <p className={styles.subtext}>
-            Please complete your company profile to continue.
-          </p>
+      <div className={styles.actionsGrid}>
+        <button
+          className={styles.actionCard}
+          onClick={() => navigate("/dashboard/empresa/services")}
+        >
+          <h3>Services</h3>
+          <p>Create and manage your company services.</p>
+        </button>
 
-          <button
-            className={styles.cta}
-            onClick={() => navigate("/dashboard/empresa/profile")}
-          >
-            Complete company profile
-          </button>
-        </>
-      )}
-
-      {empresa && userStatus === "PENDING" && (
-        <>
-          <p className={styles.subtext}>
-            ⏳ <strong>Under review</strong>
-          </p>
-
-          <p className={styles.text}>
-            Your company profile has been submitted successfully.
-          </p>
-
-          <p className={styles.text}>
-            An administrator is reviewing your information.
-          </p>
-        </>
-      )}
-
-      {empresa && userStatus === "ACTIVE" && (
-        <>
-          <p className={styles.subtext}>
-            ✅ <strong>Account approved</strong>
-          </p>
-
-          <p className={styles.text}>
-      Your account has been approved.
-          </p>
-
-          <p className={styles.text}>
-            You can now manage your services and requests.
-          </p>
-        </>
-      )}
-
-      {empresa && userStatus === "REJECTED" && (
-        <>
-          <p className={styles.subtext}>
-            ❌ <strong>Account rejected</strong>
-          </p>
-
-          <p className={styles.text}>
-            Your account was rejected by the administrator.
-          </p>
-        </>
-      )}
-
+        <button
+          className={styles.actionCard}
+          onClick={() => navigate("/dashboard/empresa/requests")}
+        >
+          <h3>Requests</h3>
+          <p>View and respond to client requests.</p>
+        </button>
+      </div>
     </div>
   );
-      }
+}

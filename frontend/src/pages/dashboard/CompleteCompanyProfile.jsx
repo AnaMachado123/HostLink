@@ -1,12 +1,9 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import styles from "./CompleteCompanyProfile.module.css";
 import completeIcon from "../../assets/icons/complete-profile.png";
 
 export default function CompleteCompanyProfile() {
-  const navigate = useNavigate();
-
   const [form, setForm] = useState({
     nome: "",
     email: "",
@@ -20,56 +17,45 @@ export default function CompleteCompanyProfile() {
 
   const [errors, setErrors] = useState({});
   const [empresaExiste, setEmpresaExiste] = useState(false);
-  const [status, setStatus] = useState(null); // pending | approved | rejected
+  const [submitting, setSubmitting] = useState(false);
 
   // ---------------------------------------------
-  // LOAD DATA
+  // LOAD DATA + GUARDA DEFINITIVA
   // ---------------------------------------------
- useEffect(() => {
-  async function loadData() {
-    const token = localStorage.getItem("token");
+  useEffect(() => {
+    async function loadData() {
+      const token = localStorage.getItem("token");
 
-    try {
-      // 1️⃣ tenta empresa
-      const empresaRes = await axios.get(
-        "http://localhost:5000/empresas/me",
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      try {
+        const empresaRes = await axios.get(
+          "http://localhost:5000/empresas/me",
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
 
-      if (empresaRes.data.exists && empresaRes.data.empresa) {
-        setEmpresaExiste(true);
-        setForm({
-          nome: empresaRes.data.empresa.nome,
-          email: empresaRes.data.empresa.email,
-          telefone: empresaRes.data.empresa.telefone || "",
-          nif: empresaRes.data.empresa.nif || "",
-          rua: empresaRes.data.empresa.rua || "",
-          nPorta: empresaRes.data.empresa.nporta || "",
-          codPostal: empresaRes.data.empresa.cod_postal || "",
-          location: empresaRes.data.empresa.location || ""
-        });
-        return;
+        // 🔒 SE A EMPRESA JÁ EXISTE → NUNCA MOSTRAR ESTE ECRÃ
+        if (empresaRes.data.exists) {
+          window.location.replace("/dashboard/empresa");
+          return;
+        }
+
+        const userRes = await axios.get(
+          "http://localhost:5000/auth/me",
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        setForm((prev) => ({
+          ...prev,
+          nome: userRes.data.nome,
+          email: userRes.data.email
+        }));
+
+      } catch (err) {
+        console.error("Erro ao carregar company profile", err);
       }
-
-      // 2️⃣ empresa não existe → usa auth/me
-      const userRes = await axios.get(
-        "http://localhost:5000/auth/me",
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      setForm((prev) => ({
-        ...prev,
-        nome: userRes.data.nome,
-        email: userRes.data.email
-      }));
-
-    } catch (err) {
-      console.error("Erro ao carregar company profile", err);
     }
-  }
 
-  loadData();
-}, []);
+    loadData();
+  }, []);
 
   // ---------------------------------------------
   // HANDLE INPUT
@@ -77,7 +63,7 @@ export default function CompleteCompanyProfile() {
   function handleChange(e) {
     const { name, value } = e.target;
 
-    if (empresaExiste && status !== "approved") return;
+    if (empresaExiste) return;
 
     if (name === "telefone" && (!/^\d*$/.test(value) || value.length > 9)) return;
     if (name === "nif" && (!/^\d*$/.test(value) || value.length > 9)) return;
@@ -89,10 +75,11 @@ export default function CompleteCompanyProfile() {
   }
 
   // ---------------------------------------------
-  // SUBMIT
+  // SUBMIT (COM REVALIDAÇÃO CONTROLADA)
   // ---------------------------------------------
   async function handleSubmit(e) {
     e.preventDefault();
+    if (submitting) return;
 
     const newErrors = {};
 
@@ -113,6 +100,7 @@ export default function CompleteCompanyProfile() {
     }
 
     try {
+      setSubmitting(true);
       const token = localStorage.getItem("token");
 
       await axios.post(
@@ -130,13 +118,19 @@ export default function CompleteCompanyProfile() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      navigate("/dashboard/empresa");
+      // 🔑 FLAG PARA UX CONSISTENTE
+      localStorage.setItem("empresaProfileSubmitted", "true");
+
+      // 🔄 REVALIDAÇÃO FINAL (SEM REFRESH MANUAL)
+      setTimeout(() => {
+        window.location.href = "/dashboard/empresa";
+      }, 1200);
+
     } catch (err) {
       console.error(err);
+      setSubmitting(false);
     }
   }
-
-  const readOnly = empresaExiste && status !== "approved";
 
   // ---------------------------------------------
   // RENDER
@@ -144,14 +138,6 @@ export default function CompleteCompanyProfile() {
   return (
     <div className={styles.wrapper}>
       <div className={styles.card}>
-
-        {empresaExiste && status === "pending" && (
-          <div className={styles.infoBox}>
-            ⏳ <strong>Profile submitted</strong>
-            <p>Your company profile is under review.</p>
-          </div>
-        )}
-
         <form onSubmit={handleSubmit}>
           <div className={styles.header}>
             <div className={styles.iconCircle}>
@@ -159,11 +145,7 @@ export default function CompleteCompanyProfile() {
             </div>
             <div>
               <h1>Company Profile</h1>
-              <p>
-                {empresaExiste
-                  ? "This is your submitted company information."
-                  : "Please provide your company details."}
-              </p>
+              <p>Please provide your company details.</p>
             </div>
           </div>
 
@@ -178,22 +160,30 @@ export default function CompleteCompanyProfile() {
               ["Postal Code", "codPostal"],
               ["Location", "location"]
             ].map(([label, name]) => (
-              <div key={name} className={name === "nome" || name === "nif" || name === "codPostal" || name === "location" ? styles.full : ""}>
+              <div
+                key={name}
+                className={
+                  ["nome", "nif", "codPostal", "location"].includes(name)
+                    ? styles.full
+                    : ""
+                }
+              >
                 <label>{label}</label>
                 <input
                   name={name}
                   value={form[name]}
-                  disabled={readOnly}
                   onChange={handleChange}
                 />
-                {errors[name] && <p className={styles.error}>{errors[name]}</p>}
+                {errors[name] && (
+                  <p className={styles.error}>{errors[name]}</p>
+                )}
               </div>
             ))}
           </div>
 
-          {!empresaExiste && (
-            <button className={styles.submit}>Submit profile</button>
-          )}
+          <button className={styles.submit} disabled={submitting}>
+            {submitting ? "Submitting..." : "Submit profile"}
+          </button>
         </form>
       </div>
     </div>
