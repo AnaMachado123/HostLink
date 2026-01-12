@@ -1,0 +1,426 @@
+/* ================= RESET ================= */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* ================= PAGE ================= */
+.container {
+  padding: 32px;
+  min-height: 100vh;
+  background-color: #f2efea;
+}
+
+/* ================= HEADER ================= */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 28px;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 600;
+  color: #0b2340;
+  margin-bottom: 6px;
+}
+
+.subtitle {
+  font-size: 16px;
+  color: #000000;
+  margin-bottom: 6px;
+}
+
+.stats {
+  font-size: 14px;
+  color: #777;
+}
+
+.primaryButton {
+  background-color: #0b2340;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.primaryButton:hover {
+  background-color: #081b31;
+}
+
+/* ================= FILTER CARD ================= */
+.filtersCard {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 28px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+/* ================= SEARCH ================= */
+.searchWrapper {
+  position: relative;
+  
+}
+
+.searchIcon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #000;              /* lupa preta */
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.searchInput {
+  width: 100%;
+  height: 40px;
+  padding: 0 16px 0 40px;
+  border-radius: 8px;
+  border: 1px solid #d0d0d0;
+  font-size: 14px;
+  background-color: #ffffff;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #0b2340;
+}
+
+/* ================= FILTER ROW ================= */
+.filtersRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.filterGroup label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #0b2340;
+  margin-bottom: 6px;
+}
+
+.filterGroup select {
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 6px;
+  border: 1px solid #d0d0d0;
+  background-color: #ffffff;
+  font-size: 14px;
+  color: #0b2340;
+  appearance: none;
+}
+
+/* ================= GRID ================= */
+.servicesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 24px;
+}
+
+/* ================= CARD ================= */
+.serviceCard {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.serviceName {
+  font-size: 18px;
+  font-weight: 600;
+  color: #0b2340;
+  margin-bottom: 6px;
+}
+
+.categoryBadge {
+  display: inline-block;
+  background-color: #e8edf4;
+  color: #0b2340;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* ================= STATUS BADGES ================= */
+.badgeActive {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.badgeInactive {
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* ================= DESCRIPTION ================= */
+.description {
+  font-size: 14px;
+  color: #444;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+/* ================= META ================= */
+.meta {
+  display: flex;
+  gap: 32px;
+  padding-top: 12px;
+  margin-bottom: 20px;
+  border-top: 1px solid #e6e6e6;
+}
+
+.metaLabel {
+  font-size: 12px;
+  color: #777;
+}
+
+.metaValue {
+  font-size: 15px;
+  font-weight: 600;
+  color: #0b2340;
+}
+
+/* ================= ACTIONS ================= */
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.primaryAction,
+.secondaryAction,
+.dangerAction {
+  flex: 1;
+  border-radius: 6px;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.primaryAction {
+  background-color: #0b2340;
+  color: #ffffff;
+  border: none;
+}
+
+.primaryAction:hover {
+  background-color: #081b31;
+}
+
+.secondaryAction {
+  background-color: #ffffff;
+  border: 1px solid #0b2340;
+  color: #0b2340;
+}
+
+.secondaryAction:hover {
+  background-color: #f0f3f8;
+}
+
+.dangerAction {
+  background-color: #ffffff;
+  border: 1px solid #c62828;
+  color: #c62828;
+}
+
+.dangerAction:hover {
+  background-color: #fdecec;
+}
+
+/* ================= MODAL ================= */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 28px;
+  width: 100%;
+  max-width: 520px;
+}
+
+.modalTitle {
+  font-size: 24px;
+  font-weight: 600;
+  color: #0b2340;
+  margin-bottom: 28px;
+}
+
+/* ================= FORM ================= */
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+.formGroup label {
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: #0b2340;
+}
+
+.formGroup input,
+.formGroup textarea,
+.formGroup select {
+  height: 40px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #d0d0d0;
+  font-size: 14px;
+  background-color: #ffffff;
+  color: #0b2340;
+}
+
+.formGroup textarea {
+  height: auto;
+  resize: vertical;
+}
+
+.formRow {
+  display: flex;
+  gap: 12px;
+}
+
+/* ================= PRICE TOGGLE ================= */
+.priceToggle {
+  display: flex;
+  gap: 8px;
+}
+
+.toggleButton {
+  flex: 1;
+  background-color: #ffffff;
+  border: 1px solid #d0d0d0;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  color: #0b2340;
+}
+
+.toggleActive {
+  flex: 1;
+  background-color: #0b2340;
+  color: #ffffff;
+  border: 1px solid #0b2340;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* ================= MODAL ACTIONS ================= */
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 28px;
+}
+/* ================= CARD ACTIONS ================= */
+.cardActions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.editButton {
+  flex: 1;
+  background-color: #ffffff;
+  border: 1px solid #0b2340;
+  color: #0b2340;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.editButton:hover {
+  background-color: #f0f3f8;
+}
+
+.toggleButton {
+  flex: 1;
+  background-color: #ffffff;
+  border: 1px solid #999;
+  color: #333;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.toggleButton:hover {
+  background-color: #f5f5f5;
+}
+
+.deleteButton {
+  flex: 1;
+  background-color: #ffffff;
+  border: 1px solid #c62828;
+  color: #c62828;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.deleteButton:hover {
+  background-color: #fdecec;
+}
+.categoryCleaning {
+  background-color: #a0cff0;
+  color: #1565c0;
+}
+
+.categoryMaintenance {
+  background-color: #ff8274;
+  color: #c62828;
+}
+
+.categoryTransport {
+  background-color: #bae8be;
+  color: #2e7d32;
+}

@@ -20,24 +20,39 @@ export default function CompleteCompanyProfile() {
   const [submitting, setSubmitting] = useState(false);
 
   // ---------------------------------------------
-  // LOAD DATA + GUARDA DEFINITIVA
+  // LOAD DATA (CRIA vs VISUALIZA)
   // ---------------------------------------------
   useEffect(() => {
     async function loadData() {
       const token = localStorage.getItem("token");
 
       try {
+        // 1️⃣ verificar se a empresa já existe
         const empresaRes = await axios.get(
           "http://localhost:5000/empresas/me",
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
-        // 🔒 SE A EMPRESA JÁ EXISTE → NUNCA MOSTRAR ESTE ECRÃ
-        if (empresaRes.data.exists) {
-          window.location.replace("/dashboard/empresa");
+        if (empresaRes.data.exists && empresaRes.data.empresa) {
+          const empresa = empresaRes.data.empresa;
+
+          setEmpresaExiste(true);
+
+          setForm({
+            nome: empresa.nome || "",
+            email: empresa.email || "",
+            telefone: empresa.telefone || "",
+            nif: empresa.nif || "",
+            rua: empresa.rua || "",
+            nPorta: empresa.nporta || "",
+            codPostal: empresa.cod_postal || "",
+            location: empresa.location || ""
+          });
+
           return;
         }
 
+        // 2️⃣ se não existir empresa → preencher com dados do utilizador
         const userRes = await axios.get(
           "http://localhost:5000/auth/me",
           { headers: { Authorization: `Bearer ${token}` } }
@@ -63,6 +78,7 @@ export default function CompleteCompanyProfile() {
   function handleChange(e) {
     const { name, value } = e.target;
 
+    // read-only se já existir empresa
     if (empresaExiste) return;
 
     if (name === "telefone" && (!/^\d*$/.test(value) || value.length > 9)) return;
@@ -75,11 +91,11 @@ export default function CompleteCompanyProfile() {
   }
 
   // ---------------------------------------------
-  // SUBMIT (COM REVALIDAÇÃO CONTROLADA)
+  // SUBMIT (APENAS QUANDO NÃO EXISTE)
   // ---------------------------------------------
   async function handleSubmit(e) {
     e.preventDefault();
-    if (submitting) return;
+    if (submitting || empresaExiste) return;
 
     const newErrors = {};
 
@@ -118,10 +134,10 @@ export default function CompleteCompanyProfile() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      // 🔑 FLAG PARA UX CONSISTENTE
+      // flag para o dashboard
       localStorage.setItem("empresaProfileSubmitted", "true");
 
-      // 🔄 REVALIDAÇÃO FINAL (SEM REFRESH MANUAL)
+      // revalidação controlada
       setTimeout(() => {
         window.location.href = "/dashboard/empresa";
       }, 1200);
@@ -145,7 +161,11 @@ export default function CompleteCompanyProfile() {
             </div>
             <div>
               <h1>Company Profile</h1>
-              <p>Please provide your company details.</p>
+              <p>
+                {empresaExiste
+                  ? "This is your submitted company information."
+                  : "Please provide your company details."}
+              </p>
             </div>
           </div>
 
@@ -172,6 +192,7 @@ export default function CompleteCompanyProfile() {
                 <input
                   name={name}
                   value={form[name]}
+                  disabled={empresaExiste}
                   onChange={handleChange}
                 />
                 {errors[name] && (
@@ -181,9 +202,11 @@ export default function CompleteCompanyProfile() {
             ))}
           </div>
 
-          <button className={styles.submit} disabled={submitting}>
-            {submitting ? "Submitting..." : "Submit profile"}
-          </button>
+          {!empresaExiste && (
+            <button className={styles.submit} disabled={submitting}>
+              {submitting ? "Submitting..." : "Submit profile"}
+            </button>
+          )}
         </form>
       </div>
     </div>
