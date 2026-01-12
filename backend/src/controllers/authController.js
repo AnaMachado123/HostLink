@@ -69,7 +69,7 @@ async function register(req, res) {
 // =======================
 // LOGIN
 // =======================
-async function login(req, res) {
+ async function login(req, res) {
   const { username, password } = req.body;
 
   try {
@@ -86,10 +86,24 @@ async function login(req, res) {
 
     const role = ROLE_MAP_REVERSE[user.id_tipouser];
 
+    let idEmpresa = null;
+
+    // 🔥 se for empresa, vai buscar o id_empresa
+    if (role === "empresa") {
+      const empresa = await AuthModel.findEmpresaByUserId(user.id_utilizador);
+      if (!empresa) {
+        return res.status(403).json({
+          error: "Company profile not found for this user"
+        });
+      }
+      idEmpresa = empresa.id_empresa;
+    }
+
     const token = jwt.sign(
       {
         id_utilizador: user.id_utilizador,
-        role
+        role,
+        id_empresa: idEmpresa
       },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
@@ -103,14 +117,17 @@ async function login(req, res) {
         role,
         status: user.status,
         nome: user.nome,
-        email: user.username // username = email
+        email: user.username,
+        id_empresa: idEmpresa
       }
     });
+
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Error during login" });
   }
 }
+
 
 // =======================
 // GET AUTHENTICATED USER
