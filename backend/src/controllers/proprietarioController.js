@@ -37,15 +37,9 @@ const ProprietarioController = {
         telefone,
         nif
       });
-      
-      await pool.query(
-        `
-        UPDATE hostlink.utilizador
-        SET status = 'PENDING'
-        WHERE id_utilizador = $1
-        `,
-        [id_utilizador]
-      );
+
+      // 👇 atualização de status corretamente delegada ao model
+      await ProprietarioModel.setUserPending(id_utilizador);
 
       return res.status(201).json({
         message: "Owner profile created",

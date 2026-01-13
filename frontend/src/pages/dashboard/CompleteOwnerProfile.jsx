@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import styles from "./CompleteOwnerProfile.module.css";
 import completeIcon from "../../assets/icons/complete-profile.png";
 
 export default function CompleteOwnerProfile() {
-  const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
   const [form, setForm] = useState({
@@ -17,34 +15,35 @@ export default function CompleteOwnerProfile() {
 
   const [errors, setErrors] = useState({});
   const [ownerExiste, setOwnerExiste] = useState(false);
-  const [status, setStatus] = useState(null); // PENDING | ACTIVE | REJECTED
+  const [status, setStatus] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
 
   // ---------------------------------------------
-  // LOAD DATA
+  // LOAD DATA (igual à empresa)
   // ---------------------------------------------
   useEffect(() => {
     async function loadData() {
       try {
-        // 1️⃣ tenta proprietário
         const res = await axios.get(
           "http://localhost:5000/proprietarios/me",
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
         if (res.data.exists && res.data.proprietario) {
+          const owner = res.data.proprietario;
+
           setOwnerExiste(true);
-          setStatus(res.data.proprietario.status);
+          setStatus(owner.status);
 
           setForm({
-            nome: res.data.proprietario.nome,
-            email: res.data.proprietario.email,
-            telefone: res.data.proprietario.telefone || "",
-            nif: res.data.proprietario.nif || ""
+            nome: owner.nome || "",
+            email: owner.email || "",
+            telefone: owner.telefone || "",
+            nif: owner.nif || ""
           });
           return;
         }
 
-        // 2️⃣ não existe → usa auth/me
         const userRes = await axios.get(
           "http://localhost:5000/auth/me",
           { headers: { Authorization: `Bearer ${token}` } }
@@ -70,21 +69,23 @@ export default function CompleteOwnerProfile() {
   function handleChange(e) {
     const { name, value } = e.target;
 
-    // 🔒 bloqueia se existir e não estiver REJECTED
     if (ownerExiste && status !== "REJECTED") return;
 
-    if ((name === "telefone" || name === "nif") &&
-        (!/^\d*$/.test(value) || value.length > 9)) return;
+    if (
+      (name === "telefone" || name === "nif") &&
+      (!/^\d*$/.test(value) || value.length > 9)
+    ) return;
 
     setForm((prev) => ({ ...prev, [name]: value }));
     setErrors((prev) => ({ ...prev, [name]: "" }));
   }
 
   // ---------------------------------------------
-  // SUBMIT
+  // SUBMIT (IGUAL À EMPRESA)
   // ---------------------------------------------
   async function handleSubmit(e) {
     e.preventDefault();
+    if (submitting || ownerExiste) return;
 
     const newErrors = {};
     if (!form.nome) newErrors.nome = "Name is required.";
@@ -98,6 +99,8 @@ export default function CompleteOwnerProfile() {
     }
 
     try {
+      setSubmitting(true);
+
       await axios.post(
         "http://localhost:5000/proprietarios/profile",
         {
@@ -109,13 +112,19 @@ export default function CompleteOwnerProfile() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      navigate("/dashboard/proprietario");
+      // 🔑 flag igual à empresa
+      localStorage.setItem("ownerProfileSubmitted", "true");
+
+      // 🔁 reload controlado (igual)
+      setTimeout(() => {
+        window.location.href = "/dashboard/proprietario";
+      }, 1200);
+
     } catch (err) {
-      console.error(err);
+      console.error("Submit owner profile error:", err);
+      setSubmitting(false);
     }
   }
-
-  const readOnly = ownerExiste && status !== "REJECTED";
 
   // ---------------------------------------------
   // RENDER
@@ -123,21 +132,6 @@ export default function CompleteOwnerProfile() {
   return (
     <div className={styles.wrapper}>
       <div className={styles.card}>
-
-        {ownerExiste && status === "PENDING" && (
-          <div className={styles.infoBox}>
-            ⏳ <strong>Profile submitted</strong>
-            <p>Your property owner profile is under review.</p>
-          </div>
-        )}
-
-        {ownerExiste && status === "REJECTED" && (
-          <div className={styles.infoBoxError}>
-            ❌ <strong>Profile rejected</strong>
-            <p>You may update your information and resubmit.</p>
-          </div>
-        )}
-
         <form onSubmit={handleSubmit}>
           <div className={styles.header}>
             <div className={styles.iconCircle}>
@@ -166,7 +160,7 @@ export default function CompleteOwnerProfile() {
                 <input
                   name={name}
                   value={form[name]}
-                  disabled={readOnly}
+                  disabled={ownerExiste && status !== "REJECTED"}
                   onChange={handleChange}
                 />
                 {errors[name] && (
@@ -176,9 +170,9 @@ export default function CompleteOwnerProfile() {
             ))}
           </div>
 
-          {(!ownerExiste || status === "REJECTED") && (
-            <button className={styles.submit}>
-              Submit profile
+          {!ownerExiste && (
+            <button className={styles.submit} disabled={submitting}>
+              {submitting ? "Submitting..." : "Submit profile"}
             </button>
           )}
         </form>

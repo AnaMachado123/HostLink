@@ -27,6 +27,17 @@ const ProprietarioModel = {
     );
 
     return result.rows[0];
+  },
+
+  setUserPending: async (idUtilizador) => {
+    await pool.query(
+      `
+      UPDATE hostlink.utilizador
+      SET status = 'PENDING'
+      WHERE id_utilizador = $1
+      `,
+      [idUtilizador]
+    );
   }
 };
 
