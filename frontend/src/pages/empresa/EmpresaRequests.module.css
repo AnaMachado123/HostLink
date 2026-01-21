@@ -1,0 +1,194 @@
+/* ================= PAGE ================= */
+.container {
+  padding: 32px;
+  min-height: 100vh;
+  background-color: #f2efea;
+}
+
+/* ================= HEADER ================= */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 28px;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 600;
+  color: #0b2340;
+  margin-bottom: 6px;
+}
+
+.subtitle {
+  font-size: 16px;
+  color: #000000;
+}
+
+/* ================= FILTERS CARD ================= */
+.filtersCard {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 28px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.filters {
+  display: flex;
+  gap: 10px;
+}
+
+.filterBtn {
+  background-color: #ffffff;
+  border: 1px solid #d0d0d0;
+  color: #0b2340;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.filterBtn:hover {
+  background-color: #f0f3f8;
+}
+
+.active {
+  background-color: #0b2340;
+  color: #ffffff;
+  border-color: #0b2340;
+}
+
+/* ================= LIST ================= */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ================= CARD ================= */
+.serviceCard {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ================= CARD HEADER ================= */
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.serviceName {
+  font-size: 18px;
+  font-weight: 600;
+  color: #0b2340;
+  margin-bottom: 6px;
+}
+
+/* ================= STATUS BADGE ================= */
+.categoryBadge {
+  display: inline-block;
+  background-color: #e8edf4;
+  color: #0b2340;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+/* ================= META ================= */
+.meta {
+  display: flex;
+  gap: 32px;
+  padding-top: 12px;
+  margin-bottom: 20px;
+  border-top: 1px solid #e6e6e6;
+}
+
+.metaLabel {
+  font-size: 12px;
+  color: #777;
+}
+
+.metaValue {
+  font-size: 15px;
+  font-weight: 600;
+  color: #0b2340;
+}
+
+/* ================= CARD ACTIONS ================= */
+.cardActions {
+  display: flex;
+  gap: 12px;
+  margin-top: auto;
+}
+
+/* ================= BUTTONS ================= */
+.primaryAction {
+  flex: 1;
+  background-color: #0b2340;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.primaryAction:hover {
+  background-color: #081b31;
+}
+
+.secondaryAction {
+  flex: 1;
+  background-color: #ffffff;
+  border: 1px solid #0b2340;
+  color: #0b2340;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.secondaryAction:hover {
+  background-color: #f0f3f8;
+}
+
+/* ================= EMPTY ================= */
+.empty {
+  padding: 40px;
+  text-align: center;
+  color: #777;
+  font-size: 15px;
+}
+/* ================= OBSERVATIONS ================= */
+.description {
+  margin-top: 12px;
+  padding: 12px 16px;
+  background-color: #f8f9fb;
+  border-radius: 8px;
+  border-left: 4px solid #0b2340;
+}
+
+.description strong {
+  display: block;
+  font-size: 13px;
+  color: #0b2340;
+  margin-bottom: 4px;
+}
+
+.description p {
+  font-size: 14px;
+  color: #444;
+  line-height: 1.5;
+  margin: 0;
+}
