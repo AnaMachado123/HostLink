@@ -1,0 +1,263 @@
+.container {
+  padding: 48px;
+  max-width: 1100px;
+}
+
+/* BACK */
+.backLink {
+  background: none;
+  border: none;
+  color: #0a2344;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-bottom: 24px;
+}
+
+/* HEADER */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 40px;
+}
+
+.breadcrumb {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #0a2344;
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 15px;
+  color: #475569;
+  margin-top: 6px;
+}
+
+/* ACTIONS */
+.actions {
+  display: flex;
+  gap: 12px;
+}
+
+.editButton {
+  padding: 10px 18px;
+  border-radius: 12px;
+  border: none;
+  background-color: #fef3c7; /* amarelo suave */
+  color: #92400e;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.deleteButton {
+  padding: 10px 18px;
+  border-radius: 12px;
+  border: none;
+  background-color: #fde2e2;
+  color: #b91c1c;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* META INFO */
+.meta {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 48px;
+  margin-bottom: 40px;
+}
+
+.metaLabel {
+  display: block;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.metaValue {
+  font-size: 16px;
+  font-weight: 600;
+  color: #0a2344;
+  margin-top: 4px;
+}
+
+/* DESCRIPTION */
+.section h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #0a2344;
+  margin-bottom: 12px;
+}
+
+.description {
+  font-size: 15px;
+  color: #334155;
+  max-width: 720px;
+  line-height: 1.6;
+}
+/* ================= MODAL ================= */
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45); /* dark overlay elegante */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal {
+  background: #ffffff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 560px;
+  padding: 32px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  animation: modalFadeIn 0.25s ease-out;
+}
+
+/* TITLE */
+.modalTitle {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0a2344;
+  margin-bottom: 24px;
+}
+
+/* FORM */
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 18px;
+}
+
+.formGroup label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #000000; 
+  margin-bottom: 6px;
+}
+
+
+.formGroup input,
+.formGroup textarea {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  font-size: 14px;
+  background-color: #f7f8fa; /* igual ao Create */
+  color: #0a2344;           /* texto escuro */
+  transition: border-color 0.15s ease;
+}
+
+.formGroup input:focus,
+.formGroup textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+/* ROW */
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* ACTIONS */
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.primaryButton {
+  padding: 10px 18px;
+  border-radius: 12px;
+  border: none;
+  background-color: #2563eb;
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.secondaryButton {
+  padding: 10px 18px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background-color: #ffffff;
+  color: #334155;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ANIMATION */
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* ===== VALIDATION ===== */
+.error {
+  font-size: 13px;
+  color: #2563eb;
+  margin-top: 4px;
+}
+
+.inputError {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px #2563eb;
+}
+
+/* ===== MODAL SCROLL SAFETY ===== */
+.modal {
+  max-height: 85vh;
+  overflow-y: auto;
+
+  /* esconder scrollbar mas manter scroll */
+  scrollbar-width: none; /* Firefox */
+}
+
+.modal::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+/* ===== FILE INPUT (igual ao Create) ===== */
+.fileInput {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 14px;
+  background-color: #0a2344; /* ou a tua var --primary-blue */
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #ffffff;
+  width: fit-content;
+}
+
+.fileInput input {
+  display: none;
+}
+
+.fileInput span {
+  color: #ffffff;
+}
+
+.fileName {
+  font-size: 13px;
+  color: #000000; /* ou var --text-muted */
+  margin-top: 6px;
+}
