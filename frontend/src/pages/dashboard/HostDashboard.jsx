@@ -198,7 +198,7 @@ export default function HostDashboard() {
                 </NavLink>
 
                 <NavLink
-                  to="/dashboard/proprietario/requests"
+                  to="/dashboard/proprietario/services"
                   className={
                     proprietarioExiste ? styles.link : styles.linkDisabled
                   }
