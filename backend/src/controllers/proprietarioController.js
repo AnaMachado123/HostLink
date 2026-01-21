@@ -24,7 +24,7 @@ const ProprietarioController = {
       }
 
       const existing = await ProprietarioModel.findByUserId(id_utilizador);
-      if (existing) {
+      if (existing && existing.id_proprietario) {
         return res.status(400).json({
           error: "Profile already exists"
         });
@@ -38,7 +38,7 @@ const ProprietarioController = {
         nif
       });
 
-      // 👇 atualização de status corretamente delegada ao model
+      // coloca utilizador como PENDING (igual à empresa)
       await ProprietarioModel.setUserPending(id_utilizador);
 
       return res.status(201).json({
@@ -55,7 +55,7 @@ const ProprietarioController = {
   },
 
   // ===============================
-  // GET MY OWNER PROFILE
+  // GET MY OWNER PROFILE  ✅ FIX AQUI
   // ===============================
   getMe: async (req, res) => {
     try {
@@ -69,7 +69,9 @@ const ProprietarioController = {
 
       const proprietario = await ProprietarioModel.findByUserId(id_utilizador);
 
-      if (!proprietario) {
+      // 🔥 CORREÇÃO CRÍTICA
+      // se não existir OU vier incompleto, frontend pode criar perfil
+      if (!proprietario || !proprietario.id_proprietario) {
         return res.json({ exists: false });
       }
 
