@@ -3,19 +3,36 @@ const router = express.Router();
 const pedidoController = require("../controllers/pedidoController");
 const auth = require("../middleware/authMiddleware");
 
-// Criar pedido (Proprietário)
+/* =====================================================
+   PROPRIETÁRIO
+===================================================== */
+
+// Criar pedido
 router.post("/", auth, pedidoController.criarPedido);
 
-// Listar os seus pedidos (proprietário)
+// Listar os próprios pedidos
 router.get("/me", auth, pedidoController.listarPedidosProprietario);
 
-// Listar todos os pedidos (Admin)
-router.get("/", auth, pedidoController.listarTodosPedidos);
+/* =====================================================
+   EMPRESA
+===================================================== */
 
-// Obter pedido por ID (Admin ou Proprietário)
-router.get("/:id", auth, pedidoController.obterPedidoPorId);
+// Listar pedidos pendentes da empresa
+router.get(
+  "/empresa",
+  auth,
+  pedidoController.listarPedidosEmpresa
+);
 
-// Atualizar estado do pedido (Admin)
-router.patch("/:id/estado", auth, pedidoController.atualizarEstadoPedido);
+/* =====================================================
+   EMPRESA / ADMIN
+===================================================== */
+
+// Atualizar estado do pedido (aprovar, cancelar, etc.)
+router.patch(
+  "/:id/estado",
+  auth,
+  pedidoController.atualizarEstadoPedido
+);
 
 module.exports = router;
