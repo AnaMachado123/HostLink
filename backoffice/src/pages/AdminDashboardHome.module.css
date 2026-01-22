@@ -1,0 +1,36 @@
+.page {
+  padding: 2rem;
+}
+
+h2 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #0a2344;
+  margin-bottom: 2rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+.label {
+  font-size: 0.9rem;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.value {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #0a2344;
+  margin-top: 0.5rem;
+}

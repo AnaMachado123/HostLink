@@ -65,7 +65,15 @@ exports.approveUser = async (req, res) => {
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
     await adminModel.approveUser(id, token, expiresAt);
-    await sendActivationEmail(user.email, token);
+
+    try {
+      await sendActivationEmail(user.email, token);
+    } catch (emailErr) {
+      console.warn(
+        `Falha ao enviar email de ativação para ${user.email}:`,
+        emailErr.message
+      );
+    }
 
     res.json({ message: "User approved successfully" });
   } catch (err) {
@@ -93,8 +101,57 @@ exports.rejectUser = async (req, res) => {
     }
 
     await adminModel.rejectUser(id);
-    res.json({ message: "User rejected successfully" });
+
+    return res.json({ message: "User rejected successfully" });
   } catch (err) {
-    res.status(500).json({ message: "Error rejecting user" });
+    return res.status(500).json({ message: "Error rejecting user" });
   }
 };
+
+
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await adminModel.getAllUsers();
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching users" });
+  }
+};
+
+
+exports.getUserHistory = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const user = await adminModel.getUserById(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    let history = null;
+
+    if (user.role === "proprietario") {
+      history = await adminModel.getOwnerHistory(id);
+    }
+
+    if (user.role === "empresa") {
+      history = await adminModel.getCompanyHistory(id);
+    }
+
+    res.json(history);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error loading user history" });
+  }
+};
+
+exports.getAdminDashboard = async (req, res) => {
+  try {
+    const stats = await adminModel.getAdminStats();
+    res.json(stats);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error loading admin dashboard" });
+  }
+};
+

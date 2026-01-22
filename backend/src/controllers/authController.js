@@ -88,7 +88,7 @@ async function register(req, res) {
 
     let idEmpresa = null;
 
-    // 🔥 se for empresa, vai buscar o id_empresa
+    // se for empresa, vai buscar o id_empresa
     if (role === "empresa") {
       const empresa = await AuthModel.findEmpresaByUserId(user.id_utilizador);
       if (!empresa) {

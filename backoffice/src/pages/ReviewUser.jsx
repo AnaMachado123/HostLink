@@ -3,6 +3,31 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../services/api";
 import styles from "./ReviewUser.module.css";
 
+const USER_LABELS = {
+  nome: "Name",
+  email: "E-mail",
+  role: "Type of User",
+  status: "Account Status",
+};
+
+const EMPRESA_LABELS = {
+  nif: "NIF",
+  nome_empresa: "Company name",
+  telefone: "Telephone",
+  rua: "Street",
+  codigo_postal: "Postal Code",
+  cidade: "City",
+};
+
+const PROPRIETARIO_LABELS = {
+  nif: "NIF",
+  telefone: "Telephone",
+  rua: "Street",
+  codigo_postal: "Postal Code",
+  cidade: "City",
+};
+
+
 export default function ReviewUser() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -10,9 +35,13 @@ export default function ReviewUser() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // ---------------------------------------------
-  // LOAD USER + PROFILE
-  // ---------------------------------------------
+  const [history, setHistory] = useState(null);
+
+  function formatDate(date) {
+    if (!date) return "—";
+    return new Date(date).toLocaleDateString("en-GB");
+  }
+
   useEffect(() => {
     async function load() {
       try {
@@ -25,6 +54,12 @@ export default function ReviewUser() {
       }
     }
 
+    async function loadHistory() {
+      const res = await api.get(`/admin/users/${id}/history`);
+      setHistory(res.data);
+    }
+
+    loadHistory();
     load();
   }, [id]);
 
@@ -33,54 +68,97 @@ export default function ReviewUser() {
 
   const { user, profile } = data;
 
+  const profileLabels =
+    user.role === "empresa" ? EMPRESA_LABELS : PROPRIETARIO_LABELS;
 
-  // ---------------------------------------------
-  // RENDER
-  // ---------------------------------------------
+
   return (
     <div className={styles.page}>
       <button className={styles.back} onClick={() => navigate(-1)}>
-        ← Voltar à lista
+        ← Return to list
       </button>
 
-      <h2>Revisão de Conta</h2>
+      <h2>Account review</h2>
 
-      {/* UTILIZADOR */}
-      <div className={styles.card}>
-        <h3>Utilizador</h3>
+      <div className={styles.grid}>
+        {/* UTILIZADOR */}
+        <div className={styles.card}>
+          <h3>User</h3>
 
-        <div className={styles.row}>
-          <span className={styles.label}>Nome:</span> {user.nome}
-        </div>
-
-        <div className={styles.row}>
-          <span className={styles.label}>Email:</span> {user.email}
-        </div>
-
-        <div className={styles.row}>
-          <span className={styles.label}>Tipo:</span> {user.role}
-        </div>
-
-        <div className={styles.row}>
-          <span className={styles.label}>Status:</span> {user.status}
-        </div>
-      </div>
-
-      {/* PERFIL */}
-      <div className={styles.card}>
-        <h3>Perfil</h3>
-
-        {profile ? (
-          Object.entries(profile).map(([key, value]) => (
+          {Object.entries(USER_LABELS).map(([key, label]) => (
             <div key={key} className={styles.row}>
-              <span className={styles.label}>{key}:</span> {String(value)}
+              <span className={styles.label}>{label}</span>
+              <span>{user[key]}</span>
             </div>
-          ))
-        ) : (
-          <p>Sem perfil associado.</p>
-        )}
-      </div>
+          ))}
+        </div>
 
+        {/* PERFIL */}
+        <div className={styles.card}>
+          <h3>
+            {user.role === "empresa"
+              ? "Company profile"
+              : "Owner profile"}
+          </h3>
+
+          {profile ? (
+            Object.entries(profileLabels).map(([key, label]) => (
+              <div key={key} className={styles.row}>
+                <span className={styles.label}>{label}</span>
+                <span>{profile[key] ?? "-"}</span>
+              </div>
+            ))
+          ) : (
+            <p>No associated profile.</p>
+          )}
+        </div>
+
+
+        {history && (
+          <div className={styles.card}>
+            <h3>Activity History</h3>
+
+            {user.role === "proprietario" && (
+              <>
+                <div className={styles.row}>
+                  <span className={styles.label}>Properties registered</span>
+                  <span>{history.total_imoveis}</span>
+                </div>
+
+                <div className={styles.row}>
+                  <span className={styles.label}>Service requests</span>
+                  <span>{history.total_pedidos}</span>
+                </div>
+
+                <div className={styles.row}>
+                  <span className={styles.label}>Last activity</span>
+                  <span>{formatDate(history.ultima_atividade)}</span>
+                </div>
+              </>
+            )}
+
+            {user.role === "empresa" && (
+              <>
+                <div className={styles.row}>
+                  <span className={styles.label}>Services offered</span>
+                  <span>{history.servicos_oferecidos}</span>
+                </div>
+
+                <div className={styles.row}>
+                  <span className={styles.label}>Requests received</span>
+                  <span>{history.pedidos_recebidos}</span>
+                </div>
+
+                <div className={styles.row}>
+                  <span className={styles.label}>Services completed</span>
+                  <span>{history.servicos_concluidos}</span>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
+      </div>
     </div>
   );
 }
