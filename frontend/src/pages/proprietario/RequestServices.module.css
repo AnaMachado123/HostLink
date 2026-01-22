@@ -1,0 +1,290 @@
+/* ================= PAGE ================= */
+.page {
+  padding: 32px;
+  background: #f6f7f9;
+  min-height: 100vh;
+}
+
+/* ================= TOP BAR ================= */
+.topBar {
+  background: #ffffff;
+  padding: 20px 24px;
+  border-radius: 14px;
+  margin-bottom: 24px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+}
+
+.propertySelect {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.propertySelect label {
+  font-size: 13px;
+  color: #475569;
+}
+
+.propertySelect select {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color:  #0a2344;
+}
+
+/* FILTERS */
+.filters {
+  display: flex;
+  gap: 10px;
+}
+
+.filters button {
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: none;
+  background: #eef2ff;
+  color: #0a2344;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.active {
+  background: #0a2344;
+  color: #ffffff;
+}
+
+/* ================= CONTENT ================= */
+.content {
+  display: grid;
+  grid-template-columns: 3fr 1.2fr;
+  gap: 24px;
+}
+
+/* ================= GRID (CRUCIAL) ================= */
+.servicesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 24px;
+}
+
+/* ================= CARD (IGUAL AO QUE TINHAS) ================= */
+.serviceCard {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px;
+
+  display: flex;
+  flex-direction: column;
+
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+
+.serviceCard h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #0a2344;
+}
+
+/* TAGS */
+.tag {
+  margin-top: 8px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  width: fit-content;
+}
+
+.cleaning {
+  background: #b3dbf5;
+  color: #0a2344;
+}
+
+.maintenance {
+  background: #ff8a80;
+  color: #8b0000;
+}
+
+.transport {
+  background: #b7ebc6;
+  color: #14532d;
+}
+
+/* BODY */
+.description {
+  margin-top: 16px;
+  font-size: 14px;
+  color:  #0a2344;
+}
+
+.price {
+  margin-top: 16px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+/* BUTTON */
+.requestBtn {
+  margin-top: auto;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+
+  background:  #0a2344;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.requestBtn:hover {
+  background: #0a2344;
+}
+
+/* ================= MAP ================= */
+.mapPanel {
+  position: sticky;
+  top: 24px;
+  height: calc(100vh - 200px);
+}
+
+.mapPlaceholder {
+  height: 100%;
+  background: #ffffff;
+  border-radius: 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #64748b;
+  font-size: 14px;
+}
+/* ================= MODAL OVERLAY ================= */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.45);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 1000;
+}
+
+/* ================= MODAL ================= */
+.modal {
+  background-color: #ffffff;
+  border-radius: 14px;
+  padding: 28px;
+  width: 100%;
+  max-width: 520px;
+
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* ================= MODAL TITLE ================= */
+.modalTitle {
+  font-size: 24px;
+  font-weight: 600;
+  color: #0a2344;
+  margin-bottom: 24px;
+}
+
+/* ================= FORM ================= */
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+.formGroup label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #0a2344;
+  margin-bottom: 6px;
+}
+
+.formGroup input,
+.formGroup select,
+.formGroup textarea {
+  height: 40px;
+  padding: 8px 12px;
+
+  border-radius: 8px;
+  border: 1px solid #d0d0d0;
+
+  font-size: 14px;
+  background-color: #ffffff;
+  color: #0a2344;
+}
+
+.formGroup textarea {
+  height: auto;
+  resize: vertical;
+}
+
+.formGroup input:disabled {
+  background-color: #f2f2f2;
+  color: #555;
+  cursor: not-allowed;
+}
+
+/* ================= MODAL ACTIONS ================= */
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+/* BOTÕES DO MODAL */
+.primaryAction {
+  background-color: #0a2344;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.primaryAction:hover {
+  background-color: #081b33;
+}
+
+.secondaryAction {
+  background-color: #ffffff;
+  border: 1px solid #0a2344;
+  color: #0a2344;
+
+  border-radius: 8px;
+  padding: 10px 18px;
+
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.secondaryAction:hover {
+  background-color: #f0f3f8;
+}
+/* ================= FORM VALIDATION ================= */
+.inputError {
+  border: 1px solid#0a2344 ;
+  background-color: #fdecec;
+}
+
+.inputError:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(198, 40, 40, 0.2);
+}

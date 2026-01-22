@@ -1,3 +1,7 @@
+/* --------------------------------------------------
+   ONBOARDING CARD (ANTES DO SUBMIT)
+-------------------------------------------------- */
+
 .card {
   max-width: 720px;
   background: #e5e4e2;
@@ -37,13 +41,132 @@
   font-weight: 600;
   cursor: pointer;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
-  transition: transform 0.12s ease;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
 
 .cta:hover {
   transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.4);
 }
 
 .cta:active {
   transform: scale(0.97);
+}
+
+/* --------------------------------------------------
+   DASHBOARD (APÓS SUBMIT) — OPÇÃO B
+-------------------------------------------------- */
+
+.dashboard {
+  max-width: 900px;
+  margin: 24px auto;
+}
+
+.subtitle {
+  color: #000000;
+  font-size: 16px;
+  margin-bottom: 24px;
+}
+
+/* --------------------------------------------------
+   ACTIONS GRID
+-------------------------------------------------- */
+
+.actionsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+/* --------------------------------------------------
+   ACTION CARDS
+-------------------------------------------------- */
+
+.actionCard {
+  position: relative;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 28px;
+  border: 1px solid #e5e5e5;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+/* Linha de destaque superior (branding subtil) */
+.actionCard::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 4px;
+  width: 100%;
+  background: #0A2344;
+  border-radius: 18px 18px 0 0;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.actionCard:hover::before {
+  opacity: 1;
+}
+
+/* Hover premium */
+.actionCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.12);
+}
+
+/* --------------------------------------------------
+   CONTENT INSIDE ACTION CARDS
+-------------------------------------------------- */
+
+.cardIcon {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 14px;
+  opacity: 0.85;
+}
+
+.actionCard h3 {
+  margin-bottom: 8px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #0A2344;
+}
+
+.actionCard p {
+  color: #000000;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+/* --------------------------------------------------
+   TOAST — PROFILE SUBMITTED (OWNER)
+-------------------------------------------------- */
+
+.toastSuccess {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  background: #ffffff;
+  color: #0A2344;
+  padding: 16px 22px;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+  border-left: 5px solid #0A2344;
+  z-index: 9999;
+  animation: toastIn 0.35s ease;
+}
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

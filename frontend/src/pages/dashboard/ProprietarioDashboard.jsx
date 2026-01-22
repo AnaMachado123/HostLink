@@ -1,88 +1,136 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Outlet, useLocation } from "react-router-dom";
 import axios from "axios";
 import styles from "./ProprietarioDashboard.module.css";
 
 export default function ProprietarioDashboard() {
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  const location = useLocation();
 
-  const user = JSON.parse(localStorage.getItem("user"));
-  const userStatus = user?.status; // PENDING | ACTIVE | REJECTED
-
-  const [ownerExiste, setOwnerExiste] = useState(null);
+  const [proprietario, setProprietario] = useState(null);
+  const [showToast, setShowToast] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function checkOwner() {
+    // toast pós submit (igual ao da empresa)
+    const submitted = localStorage.getItem("ownerProfileSubmitted");
+    if (submitted === "true") {
+      setShowToast(true);
+      localStorage.removeItem("ownerProfileSubmitted");
+      setTimeout(() => setShowToast(false), 3000);
+    }
+
+    async function loadProprietario() {
       try {
+        const token = localStorage.getItem("token");
+
         const res = await axios.get(
           "http://localhost:5000/proprietarios/me",
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        setOwnerExiste(res.data.exists === true);
-      } catch {
-        setOwnerExiste(false);
+
+        if (res.data.exists) {
+          setProprietario(res.data.proprietario);
+        } else {
+          setProprietario(null);
+        }
+      } catch (err) {
+        console.error("Erro ao carregar proprietario:", err);
+        setProprietario(null);
+      } finally {
+        setLoading(false);
       }
     }
 
-    checkOwner();
-  }, [token]);
+    loadProprietario();
+  }, []);
 
-  if (ownerExiste === null) return null;
+  if (loading) {
+    return <p>Loading...</p>;
+  }
 
+  const isProfileRoute =
+    location.pathname === "/dashboard/proprietario/profile";
+
+  const isBaseDashboard =
+    location.pathname === "/dashboard/proprietario";
+
+  // --------------------------------------------------
+  // 1️⃣ ONBOARDING ANTES DO PERFIL
+  // (NÃO BLOQUEIA /profile)
+  // --------------------------------------------------
+  if (!proprietario && !isProfileRoute) {
+    return (
+      <div className={styles.card}>
+        <h1 className={styles.title}>Property Owner Dashboard</h1>
+
+        <p className={styles.text}>
+          Welcome to your owner dashboard.
+        </p>
+
+        <p className={styles.subtext}>
+          To start using the platform, please complete your owner profile.
+        </p>
+
+        <button
+          className={styles.cta}
+          onClick={() =>
+            navigate("/dashboard/proprietario/profile")
+          }
+        >
+          Complete owner profile
+        </button>
+      </div>
+    );
+  }
+
+  // --------------------------------------------------
+  // 2️⃣ SUB-PÁGINAS (profile, properties, services, etc.)
+  // --------------------------------------------------
+  if (!isBaseDashboard) {
+    return <Outlet />;
+  }
+
+  // --------------------------------------------------
+  // 3️⃣ DASHBOARD HOME (DEPOIS DO PERFIL)
+  // --------------------------------------------------
   return (
-    <div className={styles.card}>
-      <h2 className={styles.title}>Property Owner Dashboard</h2>
+    <>
+      {showToast && (
+        <div className={styles.toastSuccess}>
+          Profile submitted and sent for review
+        </div>
+      )}
 
-      {!ownerExiste && (
-        <>
-          <p className={styles.text}>
-            Welcome to your property owner dashboard.
-          </p>
-          <p className={styles.subtext}>
-            To continue, please complete your profile.
-          </p>
+      <div className={styles.dashboard}>
+        <h1 className={styles.title}>Property Owner Dashboard</h1>
+
+        <p className={styles.subtitle}>
+          Manage your properties and requests
+        </p>
+
+        <div className={styles.actionsGrid}>
           <button
-            className={styles.cta}
-            onClick={() => navigate("/dashboard/proprietario/profile")}
+            className={styles.actionCard}
+            onClick={() =>
+              navigate("/dashboard/proprietario/properties")
+            }
           >
-            Complete owner profile
+            <h3>Properties</h3>
+            <p>Create and manage your properties.</p>
           </button>
-        </>
-      )}
 
-      {ownerExiste && userStatus === "PENDING" && (
-        <>
-          <p className={styles.text}>
-            ⏳ <strong>Under review</strong>
-          </p>
-          <p className={styles.subtext}>
-            Your profile has been submitted and is being reviewed.
-          </p>
-        </>
-      )}
-
-      {ownerExiste && userStatus === "ACTIVE" && (
-        <>
-          <p className={styles.text}>
-            ✅ <strong>Account approved</strong>
-          </p>
-          <p className={styles.subtext}>
-            You can now manage your properties and service requests.
-          </p>
-        </>
-      )}
-
-      {ownerExiste && userStatus === "REJECTED" && (
-        <>
-          <p className={styles.text}>
-            ❌ <strong>Account rejected</strong>
-          </p>
-          <p className={styles.subtext}>
-            Please contact support for more information.
-          </p>
-        </>
-      )}
-    </div>
+          <button
+            className={styles.actionCard}
+            onClick={() =>
+              navigate("/dashboard/proprietario/services")
+            }
+          >
+            <h3>Request</h3>
+            <p>Browse services and request one.</p>
+          </button>
+        </div>
+      </div>
+    </>
   );
 }

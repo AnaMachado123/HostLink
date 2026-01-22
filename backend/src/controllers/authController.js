@@ -12,7 +12,7 @@ const ROLE_MAP = {
   guest: 4
 };
 
-// Reverse mapping (CRITICAL for frontend & JWT)
+// Reverse mapping (JWT + frontend)
 const ROLE_MAP_REVERSE = {
   1: "admin",
   2: "proprietario",
@@ -40,7 +40,6 @@ async function register(req, res) {
     const passwordHash = await bcrypt.hash(password, 10);
 
     let status = "PENDING";
-
     if (role === "guest") {
       status = "ACTIVE";
     }
@@ -61,15 +60,15 @@ async function register(req, res) {
       }
     });
   } catch (err) {
-    console.error(err);
+    console.error("REGISTER ERROR:", err);
     return res.status(500).json({ error: "Error during registration" });
   }
 }
 
 // =======================
-// LOGIN
+// LOGIN  ✅ ESTÁVEL
 // =======================
- async function login(req, res) {
+async function login(req, res) {
   const { username, password } = req.body;
 
   try {
@@ -79,24 +78,30 @@ async function register(req, res) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    const passwordMatch = await bcrypt.compare(password, user.password_hash);
+    const passwordMatch = await bcrypt.compare(
+      password,
+      user.password_hash
+    );
+
     if (!passwordMatch) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
     const role = ROLE_MAP_REVERSE[user.id_tipouser];
 
+    // ⚠️ CRÍTICO:
+    // login NÃO depende de perfil existir
     let idEmpresa = null;
 
+<<<<<<< HEAD
     // se for empresa, vai buscar o id_empresa
+=======
+>>>>>>> b1d46b8b0213a4c87588173bacafdc6705ef2694
     if (role === "empresa") {
-      const empresa = await AuthModel.findEmpresaByUserId(user.id_utilizador);
-      if (!empresa) {
-        return res.status(403).json({
-          error: "Company profile not found for this user"
-        });
-      }
-      idEmpresa = empresa.id_empresa;
+      const empresa = await AuthModel.findEmpresaByUserId(
+        user.id_utilizador
+      );
+      idEmpresa = empresa ? empresa.id_empresa : null;
     }
 
     const token = jwt.sign(
@@ -121,13 +126,11 @@ async function register(req, res) {
         id_empresa: idEmpresa
       }
     });
-
   } catch (err) {
-    console.error(err);
+    console.error("LOGIN ERROR:", err);
     return res.status(500).json({ error: "Error during login" });
   }
 }
-
 
 // =======================
 // GET AUTHENTICATED USER
@@ -146,10 +149,10 @@ async function me(req, res) {
       id_utilizador: user.id_utilizador,
       role,
       nome: user.nome,
-      email: user.username // username = email
+      email: user.username
     });
   } catch (err) {
-    console.error(err);
+    console.error("AUTH ME ERROR:", err);
     return res.status(500).json({
       error: "Error fetching authenticated user"
     });

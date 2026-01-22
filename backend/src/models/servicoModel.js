@@ -27,6 +27,28 @@ const ServicoModel = {
   },
 
   // =========================
+  // 🔥 GET ALL (PUBLIC - PARA PEDIDOS)
+  // =========================
+  getAllPublic: async () => {
+    const result = await pool.query(
+      `
+      SELECT
+        s.id_servico,
+        s.nome,
+        s.descricao,
+        s.valor,
+        s.tipo_preco,
+        s.id_tiposervico,
+        s.id_empresa
+      FROM servico s
+      ORDER BY s.id_servico
+      `
+    );
+
+    return result.rows;
+  },
+
+  // =========================
   // GET BY ID + EMPRESA
   // =========================
   getByIdAndEmpresa: async (idServico, idEmpresa) => {

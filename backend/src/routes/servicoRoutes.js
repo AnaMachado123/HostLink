@@ -3,6 +3,10 @@ const router = express.Router();
 const ServicoController = require("../controllers/servicoController");
 const authMiddleware = require("../middleware/authMiddleware");
 
+
+router.get("/public", ServicoController.listAllPublic);
+
+
 router.get("/", authMiddleware, ServicoController.list);
 router.get("/:id", authMiddleware, ServicoController.getById);
 router.post("/", authMiddleware, ServicoController.create);

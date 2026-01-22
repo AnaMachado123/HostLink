@@ -1,33 +1,37 @@
 const pool = require("../config/db");
 
-// ===============================
-// CRIAR LINHA DE FATURA
-// ===============================
-async function createLinhaFatura(
+/* =====================================================
+   CRIAR LINHA DE FATURA (1 LINHA = 1 SERVIÇO)
+===================================================== */
+async function createLinhaFatura({
   idFatura,
-  quantidade,
   valor,
   idServicoExecutado
-) {
+}) {
   const result = await pool.query(
-    `INSERT INTO linhafatura
+    `
+    INSERT INTO linhafatura
       (id_fatura, qtd_linhas, valor, id_servicoexecutado)
-     VALUES ($1, $2, $3, $4)
-     RETURNING *`,
-    [idFatura, quantidade, valor, idServicoExecutado]
+    VALUES
+      ($1, 1, $2, $3)
+    RETURNING *
+    `,
+    [idFatura, valor, idServicoExecutado]
   );
 
   return result.rows[0];
 }
 
-// ===============================
-// OBTER LINHAS DE UMA FATURA
-// ===============================
+/* =====================================================
+   OBTER LINHAS DE UMA FATURA
+===================================================== */
 async function getLinhasByFatura(idFatura) {
   const result = await pool.query(
-    `SELECT *
-     FROM linhafatura
-     WHERE id_fatura = $1`,
+    `
+    SELECT *
+    FROM linhafatura
+    WHERE id_fatura = $1
+    `,
     [idFatura]
   );
 

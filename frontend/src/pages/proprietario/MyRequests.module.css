@@ -1,0 +1,144 @@
+/* ================= PAGE ================= */
+.page {
+  padding: 32px;
+  background: #f6f7f9;
+  min-height: 100vh;
+  color: #0a2344; /* 🔥 GARANTE TEXTO VISÍVEL */
+}
+
+/* ================= HEADER ================= */
+.header {
+  background: #ffffff;
+  padding: 28px;
+  border-radius: 16px;
+  margin-bottom: 32px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #0a2344;
+  margin-bottom: 6px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #64748b;
+}
+
+/* ================= BUTTON ================= */
+.primaryButton {
+  background: #0a2344;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.primaryButton:hover {
+  background: #081b33;
+}
+
+/* ================= EMPTY ================= */
+.empty {
+  background: #ffffff;
+  padding: 28px;
+  border-radius: 14px;
+  text-align: center;
+  color: #64748b;
+  font-size: 14px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+}
+
+/* ================= LIST ================= */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ================= CARD ================= */
+.card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+
+  color: #0a2344; /* 🔥 ISTO É O FIX */
+  font-size: 14px;
+
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+
+/* ================= TEXT ================= */
+.card strong {
+  font-weight: 600;
+  color: #475569;
+}
+
+/* ================= STATUS ================= */
+.status {
+  display: inline-block;
+  margin-left: 6px;
+
+  padding: 6px 14px;
+  border-radius: 999px;
+
+  font-size: 12px;
+  font-weight: 600; 
+
+  background: #eef2ff;
+  color: #0a2344;
+}
+.description {
+  margin-top: 10px;
+  padding: 10px 14px;
+  background-color: #f8f9fb;
+  border-radius: 8px;
+  border-left: 4px solid #0b2340;
+}
+
+.description strong {
+  font-size: 13px;
+  color: #0b2340;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.description p {
+  margin: 0;
+  font-size: 14px;
+  color: #444;
+  line-height: 1.5;
+}
+/* ================= STATUS BADGES ================= */
+
+/* Pending */
+.statusPending {
+  background-color: #e8edf4;
+  color: #0b2340;
+}
+
+/* Accepted */
+.statusAccepted {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+/* Rejected */
+.statusRejected {
+  background-color: #ffebee;
+  color: #c62828;
+}

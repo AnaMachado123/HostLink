@@ -1,29 +1,31 @@
 const jwt = require("jsonwebtoken");
 
 const authMiddleware = (req, res, next) => {
-  const authHeader = req.headers["authorization"];
+  const authHeader = req.headers.authorization;
 
   if (!authHeader) {
     return res.status(401).json({ error: "Authorization header missing" });
   }
 
-  const parts = authHeader.split(" ");
+  const [type, token] = authHeader.split(" ");
 
-  if (parts.length !== 2 || parts[0] !== "Bearer") {
+  if (type !== "Bearer" || !token) {
     return res.status(401).json({ error: "Invalid authorization format" });
   }
-
-  const token = parts[1];
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // decoded = { id_utilizador, role }
-    req.user = decoded;
+    // 🔥 COMPATIBILIDADE TOTAL
+    req.user = {
+      id_utilizador: decoded.id_utilizador ?? decoded.id,
+      role: decoded.role,
+      id_empresa: decoded.id_empresa ?? null
+    };
 
     next();
-  } catch (error) {
-    console.error(error);
+  } catch (err) {
+    console.error("JWT ERROR:", err.message);
     return res.status(401).json({ error: "Invalid or expired token" });
   }
 };

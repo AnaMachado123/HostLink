@@ -1,123 +1,191 @@
 const pedidoModel = require("../models/pedidoModel");
+const faturaModel = require("../models/faturaModel");
 
-// Criar pedido (Proprietário)
+/* =====================================================
+   CRIAR PEDIDO (PROPRIETÁRIO)
+===================================================== */
 async function criarPedido(req, res) {
+
+
   try {
-    const idProprietario = req.user.linkedProfile?.id;
+    const { role, id_utilizador } = req.user;
 
-    if (!req.user.linkedProfile || req.user.linkedProfile.role !== "proprietario") {
-      return res.status(403).json({ error: "Only proprietarios can create pedidos" });
+    if (role !== "proprietario") {
+      return res.status(403).json({
+        error: "Only proprietarios can create pedidos"
+      });
     }
 
-    const { descricao, valor, comissao, servicos } = req.body;
+    const { descricao, data, servicos, id_imovel } = req.body;
 
-    if (!Array.isArray(servicos) || servicos.length === 0) {
-      return res.status(400).json({ error: "Serviços inválidos" });
+    /* ================= VALIDAÇÕES ================= */
+    if (!data) {
+      return res.status(400).json({ error: "Date is required" });
     }
 
-    const pedido = await pedidoModel.createPedido(
+    if (!id_imovel) {
+      return res.status(400).json({ error: "Property is required" });
+    }
+
+    if (!Array.isArray(servicos) || !servicos[0]) {
+      return res.status(400).json({ error: "Service is required" });
+    }
+
+    const idServico = Number(servicos[0]);
+
+    /* ================= PROPRIETARIO REAL ================= */
+    const proprietario =
+      await pedidoModel.getProprietarioByUserId(id_utilizador);
+
+    if (!proprietario) {
+      return res.status(400).json({
+        error: "User is not registered as proprietario"
+      });
+    }
+
+    const idProprietario = proprietario.id_proprietario;
+
+    /* ================= CONFLITO ================= */
+    const conflict = await pedidoModel.hasConflict({
       idProprietario,
-      descricao,
-      valor,
-      comissao
-    );
-
-    await pedidoModel.addServicosToPedido(pedido.id_solicitarservico, servicos);
-
-    res.status(201).json({
-      message: "Pedido criado com sucesso",
-      pedido
+      idServico,
+      data
     });
 
+    if (conflict) {
+      return res.status(409).json({
+        error: "You already requested this service for this date."
+      });
+    }
+
+    /* ================= SERVIÇO ================= */
+    const servico = await pedidoModel.getServicoById(idServico);
+    if (!servico) {
+      return res.status(404).json({ error: "Service not found" });
+    }
+
+    const valor = servico.valor;
+    const comissao = valor * 0.1;
+
+    /* ================= CRIAR PEDIDO ================= */
+    const pedido = await pedidoModel.createPedido({
+      idProprietario,
+      idServico,
+      idImovel: id_imovel,
+      descricao,
+      valor,
+      comissao,
+      data
+    });
+
+    return res.status(201).json(pedido);
+
   } catch (error) {
-    console.error("Error creating pedido:", error);
-    res.status(500).json({ error: "Erro ao criar pedido" });
+    console.error("CREATE PEDIDO ERROR:", error);
+    return res.status(500).json({ error: "Error creating pedido" });
   }
 }
 
-// Listar pedidos do proprietário autenticado
+/* =====================================================
+   LISTAR PEDIDOS DO PROPRIETÁRIO (MY REQUESTS)
+===================================================== */
 async function listarPedidosProprietario(req, res) {
   try {
-    const idProprietario = req.user.linkedProfile?.id;
+    const { role, id_utilizador } = req.user;
 
-    if (!idProprietario) {
-      return res.status(403).json({ error: "Acesso negado: não é proprietário" });
+    if (role !== "proprietario") {
+      return res.status(403).json({ error: "Access denied" });
     }
 
-    const pedidos = await pedidoModel.getPedidosByProprietario(idProprietario);
+    const proprietario =
+      await pedidoModel.getProprietarioByUserId(id_utilizador);
 
-    for (const pedido of pedidos) {
-      pedido.servicos = await pedidoModel.getServicosDoPedido(
-        pedido.id_solicitarservico
-      );
+    if (!proprietario) {
+      return res.json([]);
     }
 
-    res.json(pedidos);
+    const pedidos = await pedidoModel.getPedidosByProprietario(
+      proprietario.id_proprietario
+    );
+
+    return res.json(pedidos);
 
   } catch (error) {
-    console.error("Error listing pedidos:", error);
-    res.status(500).json({ error: "Erro ao listar pedidos" });
+    console.error("LIST MY PEDIDOS ERROR:", error);
+    return res.status(500).json({ error: "Error listing pedidos" });
   }
 }
 
-// Listar todos os pedidos (Admin)
+/* =====================================================
+   LISTAR PEDIDOS DA EMPRESA (NOVO)
+===================================================== */
+async function listarPedidosEmpresa(req, res) {
+  try {
+    const { role, id_utilizador } = req.user;
+
+    if (role !== "empresa") {
+      return res.status(403).json({ error: "Access denied" });
+    }
+
+    const pedidos = await pedidoModel.getPedidosByEmpresa(id_utilizador);
+    return res.json(pedidos);
+
+  } catch (error) {
+    console.error("LIST EMPRESA PEDIDOS ERROR:", error);
+    return res.status(500).json({ error: "Error listing pedidos empresa" });
+  }
+}
+
+/* =====================================================
+   LISTAR TODOS OS PEDIDOS (ADMIN)
+===================================================== */
 async function listarTodosPedidos(req, res) {
   try {
     if (req.user.tipoUser !== 1) {
-      return res.status(403).json({ error: "Acesso restrito a administradores" });
+      return res.status(403).json({ error: "Admin only" });
     }
 
     const pedidos = await pedidoModel.getAllPedidos();
-
-    for (const pedido of pedidos) {
-      pedido.servicos = await pedidoModel.getServicosDoPedido(
-        pedido.id_solicitarservico
-      );
-    }
-
-    res.json(pedidos);
+    return res.json(pedidos);
 
   } catch (error) {
-    console.error("Erro ao listar pedidos (admin):", error);
-    res.status(500).json({ error: "Erro ao listar pedidos" });
+    console.error("LIST ALL PEDIDOS ERROR:", error);
+    return res.status(500).json({ error: "Error listing pedidos" });
   }
 }
 
-// Obter pedido por ID (Admin ou Proprietário)
+/* =====================================================
+   OBTER PEDIDO POR ID
+===================================================== */
 async function obterPedidoPorId(req, res) {
   try {
     const idPedido = req.params.id;
     const pedido = await pedidoModel.getPedidoById(idPedido);
 
     if (!pedido) {
-      return res.status(404).json({ error: "Pedido não encontrado" });
+      return res.status(404).json({ error: "Pedido not found" });
     }
 
-    if (
-      req.user.tipoUser !== 1 &&
-      req.user.linkedProfile?.id !== pedido.id_proprietario
-    ) {
-      return res.status(403).json({ error: "Acesso negado" });
-    }
-
-    pedido.servicos = await pedidoModel.getServicosDoPedido(idPedido);
-    res.json(pedido);
+    return res.json(pedido);
 
   } catch (error) {
-    console.error("Erro ao obter pedido por ID:", error);
-    res.status(500).json({ error: "Erro ao obter pedido" });
+    console.error("GET PEDIDO ERROR:", error);
+    return res.status(500).json({ error: "Error fetching pedido" });
   }
 }
 
-// Atualizar estado do pedido (Admin)
+/* =====================================================
+   ATUALIZAR ESTADO (EMPRESA / ADMIN)
+===================================================== */
 async function atualizarEstadoPedido(req, res) {
   try {
-    if (req.user.tipoUser !== 1) {
-      return res.status(403).json({ error: "Acesso restrito a administradores" });
-    }
-
+    const { role } = req.user;
     const idPedido = req.params.id;
     const { novoEstado } = req.body;
+
+    if (role !== "empresa" && role !== "admin") {
+      return res.status(403).json({ error: "Access denied" });
+    }
 
     const estadosPermitidos = [
       "pendente",
@@ -128,44 +196,26 @@ async function atualizarEstadoPedido(req, res) {
     ];
 
     if (!estadosPermitidos.includes(novoEstado)) {
-      return res.status(400).json({ error: "Estado inválido" });
+      return res.status(400).json({ error: "Invalid status" });
     }
 
-    const pedido = await pedidoModel.getPedidoById(idPedido);
-    if (!pedido) {
-      return res.status(404).json({ error: "Pedido não encontrado" });
-    }
+    const atualizado = await pedidoModel.updatePedidoStatus(
+      idPedido,
+      novoEstado
+    );
 
-    const transicoes = {
-      pendente: ["agendado", "cancelado"],
-      agendado: ["andamento", "cancelado"],
-      andamento: ["concluido"],
-      concluido: [],
-      cancelado: []
-    };
-
-    if (!transicoes[pedido.status].includes(novoEstado)) {
-      return res.status(400).json({
-        error: `Transição inválida: ${pedido.status} → ${novoEstado}`
-      });
-    }
-
-    const atualizado = await pedidoModel.updatePedidoStatus(idPedido, novoEstado);
-
-    res.json({
-      message: "Estado atualizado com sucesso",
-      pedido: atualizado
-    });
+    return res.json(atualizado);
 
   } catch (error) {
-    console.error("Erro ao atualizar estado do pedido:", error);
-    res.status(500).json({ error: "Erro ao atualizar estado do pedido" });
+    console.error("UPDATE STATUS ERROR:", error);
+    return res.status(500).json({ error: "Error updating pedido status" });
   }
 }
 
 module.exports = {
   criarPedido,
   listarPedidosProprietario,
+  listarPedidosEmpresa,     
   listarTodosPedidos,
   obterPedidoPorId,
   atualizarEstadoPedido
