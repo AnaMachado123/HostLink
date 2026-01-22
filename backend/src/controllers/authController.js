@@ -93,6 +93,10 @@ async function login(req, res) {
     // login NÃO depende de perfil existir
     let idEmpresa = null;
 
+<<<<<<< HEAD
+    // se for empresa, vai buscar o id_empresa
+=======
+>>>>>>> b1d46b8b0213a4c87588173bacafdc6705ef2694
     if (role === "empresa") {
       const empresa = await AuthModel.findEmpresaByUserId(
         user.id_utilizador

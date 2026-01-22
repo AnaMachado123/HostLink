@@ -1,0 +1,89 @@
+.page {
+  padding: 2rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.header select {
+  padding: 0.5rem;
+  border-radius: 8px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.table th,
+.table td {
+  padding: 1rem;
+  text-align: left;
+}
+
+.table th {
+  background: #f5f7fa;
+}
+
+.table tr:not(:last-child) {
+  border-bottom: 1px solid #eee;
+}
+
+.link {
+  color: #2563eb;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.badge {
+  background: #fde68a;
+  padding: 0.3rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.approve {
+  background: #16a34a;
+  color: white;
+  border: none;
+  padding: 0.4rem 0.7rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.reject {
+  background: #dc2626;
+  color: white;
+  border: none;
+  padding: 0.4rem 0.7rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.empty {
+  margin-top: 2rem;
+  color: #555;
+}
+
+.muted {
+  color: #6b7280;
+  font-size: 0.85rem;
+  font-style: italic;
+}

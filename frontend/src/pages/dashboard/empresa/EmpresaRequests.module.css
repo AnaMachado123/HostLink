@@ -1,0 +1,26 @@
+.page {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.card h3 {
+  margin-bottom: 6px;
+}
+
+ul {
+  margin: 12px 0;
+  padding-left: 18px;
+}
+
+select {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}

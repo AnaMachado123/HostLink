@@ -9,7 +9,7 @@ router.get(
   "/users",
   authMiddleware,
   isAdmin,
-  adminController.getPendingUsers
+  adminController.getAllUsers     /*getPendingUsers*/
 );
 
 router.get(
@@ -31,6 +31,20 @@ router.post(
   authMiddleware,
   isAdmin,
   adminController.rejectUser
+);
+
+router.get(
+  "/users/:id/history",
+  authMiddleware,
+  isAdmin,
+  adminController.getUserHistory
+);
+
+router.get(
+  "/dashboard",
+  authMiddleware,
+  isAdmin,
+  adminController.getAdminDashboard
 );
 
 
