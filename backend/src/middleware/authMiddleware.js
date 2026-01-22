@@ -16,7 +16,6 @@ const authMiddleware = (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // 🔥 COMPATIBILIDADE TOTAL
     req.user = {
       id_utilizador: decoded.id_utilizador ?? decoded.id,
       role: decoded.role,

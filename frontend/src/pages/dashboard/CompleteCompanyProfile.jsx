@@ -78,7 +78,6 @@ export default function CompleteCompanyProfile() {
   function handleChange(e) {
     const { name, value } = e.target;
 
-    // read-only se já existir empresa
     if (empresaExiste) return;
 
     if (name === "telefone" && (!/^\d*$/.test(value) || value.length > 9)) return;
@@ -119,7 +118,7 @@ export default function CompleteCompanyProfile() {
       setSubmitting(true);
       const token = localStorage.getItem("token");
 
-      await axios.post(
+      const res = await axios.post(
         "http://localhost:5000/empresas/profile",
         {
           nome_empresa: form.nome,
@@ -134,10 +133,15 @@ export default function CompleteCompanyProfile() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
+      // 🔑 GUARDA O TOKEN NOVO (CORREÇÃO CRÍTICA)
+      if (res.data?.token) {
+        localStorage.setItem("token", res.data.token);
+      }
+
       // flag para o dashboard
       localStorage.setItem("empresaProfileSubmitted", "true");
 
-      // revalidação controlada
+      // redirect mantido
       setTimeout(() => {
         window.location.href = "/dashboard/empresa";
       }, 1200);

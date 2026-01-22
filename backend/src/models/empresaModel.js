@@ -21,10 +21,6 @@ const EmpresaModel = {
       );
     }
   },
-
-  // =======================================
-  // GET EMPRESA BY USER  ✅ FIX FINAL
-  // =======================================
   findByUserId: async (idUtilizador) => {
     const query = `
       SELECT 

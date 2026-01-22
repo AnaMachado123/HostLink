@@ -1,0 +1,24 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.header h1 {
+  color: #0a2344;
+}
+
+.header p {
+  color: #000000;
+}
+
+.list {
+  display: grid;
+  gap: 16px;
+}
+
+.empty {
+  padding: 40px;
+  text-align: center;
+  color: #64748b;
+}

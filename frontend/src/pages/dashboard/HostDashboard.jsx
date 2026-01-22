@@ -172,6 +172,13 @@ export default function HostDashboard() {
                 >
                   Requests
                 </NavLink>
+             
+              <NavLink
+                to="/dashboard/empresa/invoices"
+                className={empresaExiste ? styles.link : styles.linkDisabled}
+              >
+                Invoices
+              </NavLink>
               </>
             )}
 
@@ -205,6 +212,15 @@ export default function HostDashboard() {
                 >
                   Requests
                 </NavLink>
+
+                <NavLink
+                   to="/dashboard/proprietario/invoices"
+                  className={
+                   proprietarioExiste ? styles.link : styles.linkDisabled
+                  }
+                >
+                  Invoices
+                </NavLink>    
               </>
             )}
           </nav>

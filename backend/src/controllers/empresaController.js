@@ -1,17 +1,46 @@
+const jwt = require("jsonwebtoken");
 const EmpresaModel = require("../models/empresaModel");
 
-const EmpresaController = {
+function signEmpresaToken({ id_utilizador, role, id_empresa }) {
+  return jwt.sign(
+    { id_utilizador, role, id_empresa },
+    process.env.JWT_SECRET,
+    { expiresIn: "1d" }
+  );
+}
 
+const EmpresaController = {
   // =======================================
   // CREATE COMPANY PROFILE
   // =======================================
   createProfile: async (req, res) => {
     try {
+      // ✅ defesa: se auth falhou ou token não tem id
+      if (!req.user || !req.user.id_utilizador) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
       const { id_utilizador, role } = req.user;
 
       if (role !== "empresa") {
         return res.status(403).json({
           error: "Only company accounts can create a company profile"
+        });
+      }
+
+      // ✅ se já existir, NÃO cria outra e ainda devolve token correto
+      const existing = await EmpresaModel.findByUserId(id_utilizador);
+      if (existing) {
+        const token = signEmpresaToken({
+          id_utilizador,
+          role,
+          id_empresa: existing.id_empresa
+        });
+
+        return res.status(200).json({
+          exists: true,
+          empresa: existing,
+          token
         });
       }
 
@@ -47,12 +76,9 @@ const EmpresaController = {
       }
 
       // garante código postal + location
-      await EmpresaModel.ensureCodigoPostalExists(
-        codigo_postal,
-        location
-      );
+      await EmpresaModel.ensureCodigoPostalExists(codigo_postal, location);
 
-      // 🔥 CRIA A EMPRESA (COM location)
+      // cria empresa
       const empresa = await EmpresaModel.create({
         idUtilizador: id_utilizador,
         nome: nome_empresa,
@@ -65,16 +91,42 @@ const EmpresaController = {
         location
       });
 
-      // ✅ DEVOLVE NO FORMATO DO GET
-      return res.status(201).json({
-        exists: true,
-        empresa
+      // 🔑 token atualizado com id_empresa
+      const token = signEmpresaToken({
+        id_utilizador,
+        role,
+        id_empresa: empresa.id_empresa
       });
 
+      return res.status(201).json({
+        exists: true,
+        empresa,
+        token
+      });
     } catch (error) {
-      console.error(error);
+      console.error("CREATE COMPANY ERROR:", error);
+
+      // ✅ se for erro do Postgres (muito comum)
+      if (error && error.code) {
+        // 23505 = unique_violation
+        if (error.code === "23505") {
+          return res.status(409).json({
+            error: "Duplicate value (unique constraint)",
+            detail: error.detail
+          });
+        }
+
+        return res.status(500).json({
+          error: "Database error",
+          code: error.code,
+          detail: error.detail
+        });
+      }
+
+      // ✅ devolve msg para debug (em dev)
       return res.status(500).json({
-        error: "Error creating company profile"
+        error: "Error creating company profile",
+        message: error?.message
       });
     }
   },
@@ -84,6 +136,10 @@ const EmpresaController = {
   // =======================================
   getMe: async (req, res) => {
     try {
+      if (!req.user || !req.user.id_utilizador) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
       const { id_utilizador, role } = req.user;
 
       if (role !== "empresa") {
@@ -102,11 +158,11 @@ const EmpresaController = {
         exists: true,
         empresa
       });
-
     } catch (error) {
-      console.error(error);
+      console.error("GET COMPANY ERROR:", error);
       return res.status(500).json({
-        error: "Error retrieving company profile"
+        error: "Error retrieving company profile",
+        message: error?.message
       });
     }
   }

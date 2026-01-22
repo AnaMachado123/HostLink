@@ -22,18 +22,28 @@ export default function EmpresaRequests() {
 
       const data = await res.json();
 
-      // normalizar estados para inglês (frontend only)
-      const normalized = (Array.isArray(data) ? data : []).map(
-        (r) => ({
+      // ✅ NORMALIZAR STATUS (APENAS TRADUÇÃO)
+      const normalized = (Array.isArray(data) ? data : [])
+        .map((r) => ({
           ...r,
           status:
             r.status === "pendente"
               ? "pending"
               : r.status === "agendado"
               ? "accepted"
-              : "rejected"
-        })
-      );
+              : r.status === "andamento"
+              ? "in_progress"
+              : r.status === "concluido"
+              ? "completed"
+              : r.status === "cancelado"
+              ? "rejected"
+              : r.status
+        }))
+        // ✅ ORDENAR POR CRIAÇÃO (mais recente primeiro)
+        .sort(
+          (a, b) =>
+            b.id_solicitarservico - a.id_solicitarservico
+        );
 
       setRequests(normalized);
     } catch (err) {
@@ -52,8 +62,11 @@ export default function EmpresaRequests() {
     try {
       const token = localStorage.getItem("token");
 
+      // 🔥 MAP PARA BACKEND (PT)
       const backendStatus =
-        newStatus === "accepted" ? "agendado" : "cancelado";
+        newStatus === "accepted"
+          ? "agendado"
+          : "cancelado";
 
       const res = await fetch(
         `http://localhost:5000/pedidos/${id}/estado`,
@@ -69,10 +82,17 @@ export default function EmpresaRequests() {
 
       if (!res.ok) throw new Error();
 
+      // 🔄 atualizar estado localmente
       setRequests((prev) =>
         prev.map((r) =>
           r.id_solicitarservico === id
-            ? { ...r, status: newStatus }
+            ? {
+                ...r,
+                status:
+                  backendStatus === "agendado"
+                    ? "accepted"
+                    : "rejected"
+              }
             : r
         )
       );
@@ -83,11 +103,27 @@ export default function EmpresaRequests() {
     }
   }
 
-  const filteredRequests = requests.filter(
-    (r) => r.status === filter
-  );
+  
+  const filteredRequests = requests
+  .filter((r) => {
+    if (filter === "accepted") {
+      return ["accepted", "in_progress", "completed"].includes(
+        r.status
+      );
+    }
+    return r.status === filter;
+  })
+  .sort((a, b) => {
+    if (filter === "accepted") {
+    
+      return b.id_solicitarservico - a.id_solicitarservico;
+    }
+    return 0;
+  });
 
-  if (loading) return <p>Loading...</p>;
+if (loading) return <p>Loading...</p>;
+
+
 
   return (
     <div className={styles.container}>
@@ -141,7 +177,7 @@ export default function EmpresaRequests() {
                     {req.servico_nome}
                   </div>
                   <span className={styles.categoryBadge}>
-                    {req.status}
+                    {req.status.replace("_", " ")}
                   </span>
                 </div>
               </div>

@@ -1,0 +1,150 @@
+/* ================= PAGE ================= */
+.page {
+  padding: 32px;
+}
+
+.title {
+  font-size: 36px;
+  font-weight: 700;
+  color: #0a2344;
+  margin-bottom: 6px;
+}
+
+.subtitle {
+  font-size: 15px;
+  color: #000000 !important; /* força preto */
+  margin-bottom: 32px;
+}
+
+/* ================= LIST ================= */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* ================= CARD ================= */
+.card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 28px 32px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  color: #0a2344;
+}
+
+/* ================= HEADER ================= */
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.invoiceNumber {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.date {
+  font-size: 13px;
+  color: #64748b;
+  margin-top: 6px;
+}
+
+/* ================= STATUS ================= */
+.status {
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+.statusIssued {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+/* ================= BODY ================= */
+.cardBody {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  margin-bottom: 26px;
+}
+
+.block {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  font-size: 12px;
+  color: #64748b;
+  margin-bottom: 6px;
+}
+
+.value {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+/* ================= TOTAL ================= */
+.total {
+  text-align: right;
+}
+
+.totalLabel {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.totalValue {
+  font-size: 20px;
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+/* ================= ACTIONS ================= */
+.actions {
+  display: flex;
+  gap: 14px;
+}
+
+.viewBtn {
+  background: #0a2344;
+  color: #ffffff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.viewBtn:hover {
+  background: #081a33;
+}
+
+.pdfBtn {
+  background: #0369a1;
+  color: #ffffff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.pdfBtn:hover {
+  background: #000000;
+}
+
+/* ================= EMPTY ================= */
+.empty {
+  padding: 60px;
+  background: #ffffff;
+  border-radius: 14px;
+  text-align: center;
+  color: #64748b;
+  font-size: 15px;
+}

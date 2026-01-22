@@ -28,11 +28,21 @@ export default function Services() {
     try {
       const token = localStorage.getItem('token');
 
+      if (!token) {
+        console.warn('No token found, skipping services fetch');
+        return;
+      }
+
       const res = await fetch('http://localhost:5000/servicos', {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
+
+      if (res.status === 403) {
+        console.warn('403 – token may be outdated');
+        return;
+      }
 
       if (!res.ok) {
         console.error('Erro ao carregar serviços:', res.status);
@@ -84,73 +94,85 @@ export default function Services() {
 
   /* ================= CREATE / EDIT ================= */
   const handleSave = async () => {
-    if (
-      !formData.nome ||
-      !formData.descricao ||
-      !String(formData.valor).trim() ||
-      !formData.priceType
-    ) {
-      alert('Please fill all required fields.');
-      return;
-    }
+  if (
+    !formData.nome ||
+    !formData.descricao ||
+    !String(formData.valor).trim() ||
+    !formData.priceType
+  ) {
+    alert('Please fill all required fields.');
+    return;
+  }
 
-    const token = localStorage.getItem('token');
+  const token = localStorage.getItem('token');
+  if (!token) {
+    return; // não força login, apenas aborta
+  }
 
-    const normalizedValue = Number(String(formData.valor).replace(',', '.'));
-    if (Number.isNaN(normalizedValue)) {
-      alert('Invalid price value');
-      return;
-    }
+  const normalizedValue = Number(String(formData.valor).replace(',', '.'));
+  if (Number.isNaN(normalizedValue)) {
+    alert('Invalid price value');
+    return;
+  }
 
-    const payload = {
-      nome: formData.nome,
-      descricao: formData.descricao,
-      valor: normalizedValue,
-      idTipoServico: formData.id_tiposervico,
-      tipo_preco: formData.priceType
-    };
-
-    try {
-      const url = editingId
-        ? `http://localhost:5000/servicos/${editingId}`
-        : 'http://localhost:5000/servicos';
-
-      const method = editingId ? 'PATCH' : 'POST';
-
-      const res = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(payload)
-      });
-
-      if (!res.ok) throw new Error();
-
-      await fetchServices();
-      setShowModal(false);
-      resetForm();
-
-      setSearch('');
-      setCategoryFilter('');
-      setPriceFilter('');
-    } catch (e) {
-      console.error(e);
-      alert('Error saving service');
-    }
+  const payload = {
+    nome: formData.nome,
+    descricao: formData.descricao,
+    valor: normalizedValue,
+    idTipoServico: formData.id_tiposervico,
+    tipo_preco: formData.priceType
   };
+
+  try {
+    const url = editingId
+      ? `http://localhost:5000/servicos/${editingId}`
+      : 'http://localhost:5000/servicos';
+
+    const method = editingId ? 'PATCH' : 'POST';
+
+    const res = await fetch(url, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify(payload)
+    });
+
+    // 🔥 aqui está a correção
+    if (res.status === 403) {
+      console.warn('403 while saving service – token still outdated');
+      return; // sem alert, sem logout, sem refresh
+    }
+
+    if (!res.ok) throw new Error();
+
+    await fetchServices();
+    setShowModal(false);
+    resetForm();
+
+    setSearch('');
+    setCategoryFilter('');
+    setPriceFilter('');
+  } catch (e) {
+    console.error(e);
+    alert('Error saving service');
+  }
+};
 
   /* ================= DELETE ================= */
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this service?')) return;
 
     const token = localStorage.getItem('token');
+    if (!token) return;
 
     try {
       const res = await fetch(`http://localhost:5000/servicos/${id}`, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` }
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
 
       if (!res.ok) throw new Error();
@@ -202,7 +224,15 @@ export default function Services() {
       <div className={styles.filtersCard}>
         <div className={styles.searchWrapper}>
           <span className={styles.searchIcon}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <circle cx="11" cy="11" r="8" />
               <line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>

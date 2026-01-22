@@ -29,7 +29,7 @@ export default function EmpresaDashboard() {
   }, []);
 
   // --------------------------------------------------
-  // 1️⃣ ONBOARDING — empresa ainda não existe
+  // 1️ ONBOARDING — empresa ainda não existe
   // --------------------------------------------------
   if (!empresa) {
     return (
@@ -55,14 +55,14 @@ export default function EmpresaDashboard() {
   }
 
   // --------------------------------------------------
-  // 2️⃣ DASHBOARD — empresa já existe (OPÇÃO B)
+  // 2️ DASHBOARD — empresa já existe
   // --------------------------------------------------
   return (
     <div className={styles.dashboard}>
       <h1 className={styles.title}>Company Dashboard</h1>
 
       <p className={styles.subtitle}>
-        Manage your services and requests
+        Manage your services, requests and invoices
       </p>
 
       <div className={styles.actionsGrid}>
@@ -80,6 +80,15 @@ export default function EmpresaDashboard() {
         >
           <h3>Requests</h3>
           <p>View and respond to client requests.</p>
+        </button>
+
+        
+        <button
+          className={styles.actionCard}
+          onClick={() => navigate("/dashboard/empresa/invoices")}
+        >
+          <h3>Invoices</h3>
+          <p>View and download issued invoices.</p>
         </button>
       </div>
     </div>

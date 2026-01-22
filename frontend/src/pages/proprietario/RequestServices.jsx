@@ -93,10 +93,10 @@ export default function RequestServices() {
 
   /* ================= POST PEDIDO ================= */
   async function handleSubmit() {
-    console.log("🔥 HANDLE SUBMIT CHAMADO");
+    console.log(" HANDLE SUBMIT CHAMADO");
 
     if (!formData.date) {
-      console.error("❌ DATE EMPTY");
+      console.error(" DATE EMPTY");
       setDateError(true);
       return;
     }
@@ -113,7 +113,7 @@ export default function RequestServices() {
       id_imovel: selectedProperty
     };
 
-    console.log("📦 PAYLOAD A ENVIAR:", payload);
+    console.log(" PAYLOAD A ENVIAR:", payload);
 
     try {
       setSubmitting(true);

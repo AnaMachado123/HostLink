@@ -177,6 +177,8 @@ async function obterPedidoPorId(req, res) {
 /* =====================================================
    ATUALIZAR ESTADO (EMPRESA / ADMIN)
 ===================================================== */
+
+
 async function atualizarEstadoPedido(req, res) {
   try {
     const { role } = req.user;
@@ -199,18 +201,51 @@ async function atualizarEstadoPedido(req, res) {
       return res.status(400).json({ error: "Invalid status" });
     }
 
+    //  obter pedido antes
+    const pedido = await pedidoModel.getPedidoById(idPedido);
+    if (!pedido) {
+      return res.status(404).json({ error: "Pedido not found" });
+    }
+
+    //  atualizar estado
     const atualizado = await pedidoModel.updatePedidoStatus(
       idPedido,
       novoEstado
     );
 
-    return res.json(atualizado);
+    //  SE FOR ACEITE → GERAR FATURA AUTOMÁTICA
+    const estadosQueGeramFatura = [
+      "agendado",
+      "andamento",
+      "concluido"
+    ];
 
+    if (estadosQueGeramFatura.includes(novoEstado)) {
+      const existente =
+        await faturaModel.getFaturaByPedido(idPedido);
+
+      if (!existente) {
+        const total =
+          Number(pedido.valor) + Number(pedido.comissao || 0);
+
+        await faturaModel.createFatura({
+          valor: total,
+          observacoes:
+            "Academic project only. This document has no fiscal validity.",
+          id_solicitarservico: idPedido
+        });
+      }
+    }
+
+    return res.json(atualizado);
   } catch (error) {
     console.error("UPDATE STATUS ERROR:", error);
-    return res.status(500).json({ error: "Error updating pedido status" });
+    return res.status(500).json({
+      error: "Error updating pedido status"
+    });
   }
 }
+
 
 module.exports = {
   criarPedido,

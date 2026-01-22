@@ -57,7 +57,6 @@ export default function ProprietarioDashboard() {
 
   // --------------------------------------------------
   // 1️⃣ ONBOARDING ANTES DO PERFIL
-  // (NÃO BLOQUEIA /profile)
   // --------------------------------------------------
   if (!proprietario && !isProfileRoute) {
     return (
@@ -85,14 +84,14 @@ export default function ProprietarioDashboard() {
   }
 
   // --------------------------------------------------
-  // 2️⃣ SUB-PÁGINAS (profile, properties, services, etc.)
+  // 2️⃣ SUB-PÁGINAS
   // --------------------------------------------------
   if (!isBaseDashboard) {
     return <Outlet />;
   }
 
   // --------------------------------------------------
-  // 3️⃣ DASHBOARD HOME (DEPOIS DO PERFIL)
+  // 3️⃣ DASHBOARD HOME
   // --------------------------------------------------
   return (
     <>
@@ -106,7 +105,7 @@ export default function ProprietarioDashboard() {
         <h1 className={styles.title}>Property Owner Dashboard</h1>
 
         <p className={styles.subtitle}>
-          Manage your properties and requests
+          Manage your properties, requests and invoices
         </p>
 
         <div className={styles.actionsGrid}>
@@ -126,8 +125,18 @@ export default function ProprietarioDashboard() {
               navigate("/dashboard/proprietario/services")
             }
           >
-            <h3>Request</h3>
+            <h3>Requests</h3>
             <p>Browse services and request one.</p>
+          </button>
+
+          <button
+            className={styles.actionCard}
+            onClick={() =>
+              navigate("/dashboard/proprietario/invoices")
+            }
+          >
+            <h3>Invoices</h3>
+            <p>View and download your invoices.</p>
           </button>
         </div>
       </div>
