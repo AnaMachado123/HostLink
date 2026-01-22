@@ -1,22 +1,20 @@
 .page {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
   background: #e5e4e2;
+  overflow: hidden;
 }
 
-/* SIDEBAR */
 .sidebar {
   width: 280px;
+  height: 100vh;
   background: #0a2344; 
   color: white;
   padding: 28px 22px;
   display: flex;
   flex-direction: column;
-  border-top-left-radius: 22px;
-  border-bottom-left-radius: 22px;
 }
 
-/* TITULO */
 .title {
   font-size: 1.7rem;
   font-weight: 750;
@@ -24,7 +22,6 @@
   letter-spacing: 0.2px;
 }
 
-/* NAV */
 .nav {
   display: flex;
   flex-direction: column;
@@ -55,9 +52,9 @@
   border-radius: 12px;
 }
 
-/* LOGOUT */
 .logout {
   margin-top: auto;
+  margin-bottom: 60px;
   padding: 12px 14px;
   border: 1px solid rgba(255, 255, 255, 0.35);
   background: transparent;
@@ -66,7 +63,6 @@
   border-radius: 14px;
   font-size: 1.05rem;
   font-weight: 600;
-  transition: transform 0.12s ease, background 0.2s ease;
 }
 
 .logout:hover {
@@ -78,20 +74,19 @@
   transform: scale(0.98);
 }
 
-/* CONTEÚDO */
 .content {
   flex: 1;
   padding: 34px;
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 /* O “cartão” branco grande onde as páginas vão ficar */
 .contentInner {
   background: #ffffff;
-  border-radius: 22px;
+  border-radius: 0;
   padding: 28px;
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
-  min-height: calc(100vh - 68px);
+  box-shadow: none;
+  height: 100%;
 }
 
 /* TOP BRAND AREA */

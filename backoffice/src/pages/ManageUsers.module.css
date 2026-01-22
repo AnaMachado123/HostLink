@@ -1,5 +1,7 @@
 .page {
-  padding: 2rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .header {
@@ -18,9 +20,7 @@
   width: 100%;
   border-collapse: collapse;
   background: #fff;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  box-shadow: none;
 }
 
 .table th,
@@ -86,4 +86,9 @@
   color: #6b7280;
   font-size: 0.85rem;
   font-style: italic;
+}
+
+.tableWrapper {
+  flex: 1;
+  overflow-y: auto;  
 }

@@ -1,0 +1,28 @@
+.page {
+  padding: 2rem;
+}
+
+.table {
+  width: 100%;
+  background: white;
+  border-collapse: collapse;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+th, td {
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+th {
+  background: #f5f7fa;
+  text-align: left;
+}
+
+.badge {
+  background: #fde68a;
+  padding: 0.3rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+}

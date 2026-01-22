@@ -101,28 +101,34 @@ exports.getOwnerHistory = async (userId) => {
 exports.getCompanyHistory = async (userId) => {
   const result = await pool.query(`
     SELECT
+      -- Serviços oferecidos
       (SELECT COUNT(*)
-       FROM hostlink.empresaservico es
-       JOIN hostlink.empresa e ON e.id_empresa = es.id_empresa
-       WHERE e.id_utilizador = $1) AS servicos_oferecidos,
+       FROM hostlink.servico s
+       JOIN hostlink.empresa e ON e.id_empresa = s.id_empresa
+       WHERE e.id_utilizador = $1
+      ) AS servicos_oferecidos,
 
+      -- Pedidos recebidos
       (SELECT COUNT(*)
-       FROM hostlink.solicitarservico s
-       JOIN hostlink.servicopedido sp ON sp.id_solicitarservico = s.id_solicitarservico
-       JOIN hostlink.servico se ON se.id_servico = sp.id_servico
-       JOIN hostlink.empresaservico es ON es.id_servico = se.id_servico
-       JOIN hostlink.empresa e ON e.id_empresa = es.id_empresa
-       WHERE e.id_utilizador = $1) AS pedidos_recebidos,
+       FROM hostlink.solicitarservico ss
+       JOIN hostlink.servico s ON s.id_servico = ss.id_servico
+       JOIN hostlink.empresa e ON e.id_empresa = s.id_empresa
+       WHERE e.id_utilizador = $1
+      ) AS pedidos_recebidos,
 
+      -- Serviços concluídos (opcional / depende do teu fluxo)
       (SELECT COUNT(*)
-       FROM hostlink.servicoexecutado sx
-       JOIN hostlink.funcionarios f ON f.id_funcionario = sx.id_funcionario
-       JOIN hostlink.empresa e ON e.id_empresa = f.id_empresa
-       WHERE e.id_utilizador = $1) AS servicos_concluidos
+       FROM hostlink.solicitarservico ss
+       JOIN hostlink.servico s ON s.id_servico = ss.id_servico
+       JOIN hostlink.empresa e ON e.id_empresa = s.id_empresa
+       WHERE e.id_utilizador = $1
+         AND ss.status = 'concluido'
+      ) AS servicos_concluidos
   `, [userId]);
 
   return result.rows[0];
 };
+
 
 exports.getAdminStats = async () => {
   const result = await pool.query(`
@@ -152,3 +158,38 @@ exports.getAdminStats = async () => {
   return result.rows[0];
 };
 
+
+exports.getAllInvoices = async () => {
+  const result = await pool.query(`
+    SELECT
+      fr.id_fatura,
+      fr.dt_emissao,
+      fr.valor,
+      fr.status,
+
+      e.nome        AS empresa_nome,
+      u.nome        AS cliente_nome,
+      s.nome        AS servico_nome
+
+    FROM hostlink.fatura_recibo fr
+
+    JOIN hostlink.solicitarservico ss
+      ON ss.id_solicitarservico = fr.id_solicitarservico
+
+    JOIN hostlink.servico s
+      ON s.id_servico = ss.id_servico
+
+    JOIN hostlink.empresa e
+      ON e.id_empresa = s.id_empresa
+
+    JOIN hostlink.proprietario p
+      ON p.id_proprietario = ss.id_proprietario
+
+    JOIN hostlink.utilizador u
+      ON u.id_utilizador = p.id_utilizador
+
+    ORDER BY fr.dt_emissao DESC
+  `);
+
+  return result.rows;
+};

@@ -26,7 +26,7 @@ async function resolveEmpresaId(req) {
 ===================================================== */
 const ServicoController = {
 
-  // 🔓 público
+  // público
   listAllPublic: async (req, res) => {
     try {
       const servicos = await ServicoModel.getAllPublic();
@@ -39,7 +39,7 @@ const ServicoController = {
     }
   },
 
-  // 🔒 empresa
+  // empresa
   list: async (req, res) => {
     try {
       const idEmpresa = await resolveEmpresaId(req);

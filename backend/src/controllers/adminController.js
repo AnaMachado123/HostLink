@@ -155,3 +155,12 @@ exports.getAdminDashboard = async (req, res) => {
   }
 };
 
+exports.getAllInvoices = async (req, res) => {
+  try {
+    const invoices = await adminModel.getAllInvoices();
+    res.json(invoices);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error loading invoices" });
+  }
+};

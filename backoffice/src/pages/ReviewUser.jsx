@@ -12,19 +12,16 @@ const USER_LABELS = {
 
 const EMPRESA_LABELS = {
   nif: "NIF",
-  nome_empresa: "Company name",
+  nome: "Company name",
   telefone: "Telephone",
   rua: "Street",
-  codigo_postal: "Postal Code",
-  cidade: "City",
+  cod_postal: "Postal Code",
+  location: "City",
 };
 
 const PROPRIETARIO_LABELS = {
   nif: "NIF",
   telefone: "Telephone",
-  rua: "Street",
-  codigo_postal: "Postal Code",
-  cidade: "City",
 };
 
 
@@ -37,10 +34,10 @@ export default function ReviewUser() {
 
   const [history, setHistory] = useState(null);
 
-  function formatDate(date) {
+  /*function formatDate(date) {
     if (!date) return "—";
     return new Date(date).toLocaleDateString("en-GB");
-  }
+  }*/
 
   useEffect(() => {
     async function load() {
@@ -129,11 +126,13 @@ export default function ReviewUser() {
                   <span className={styles.label}>Service requests</span>
                   <span>{history.total_pedidos}</span>
                 </div>
-
+                
+                {/*
                 <div className={styles.row}>
                   <span className={styles.label}>Last activity</span>
                   <span>{formatDate(history.ultima_atividade)}</span>
                 </div>
+                */}
               </>
             )}
 

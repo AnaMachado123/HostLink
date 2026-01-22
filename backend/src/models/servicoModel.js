@@ -27,8 +27,31 @@ const ServicoModel = {
   },
 
   // =========================
-  // 🔥 GET ALL (PUBLIC - PARA PEDIDOS)
+  // GET ALL (PUBLIC - PARA PEDIDOS)
   // =========================
+  /*getAllPublic: async () => {
+    const result = await pool.query(`
+      SELECT
+        s.id_servico,
+        s.nome,
+        s.descricao,
+        s.valor,
+        s.tipo_preco,
+        s.id_tiposervico,
+        s.id_empresa,
+        e.location AS empresa_location
+
+      FROM servico s
+      JOIN empresa e
+        ON e.id_empresa = s.id_empresa
+
+      ORDER BY s.id_servico
+    `);
+
+    return result.rows;
+  },*/
+
+
   getAllPublic: async () => {
     const result = await pool.query(
       `

@@ -69,69 +69,71 @@ export default function ManageUsers() {
       {filteredUsers.length === 0 ? (
         <p className={styles.empty}>No pending accounts</p>
       ) : (
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>E-mail</th>
-              <th>Type</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {filteredUsers.map(user => (
-              <tr key={user.id_utilizador}>
-                <td
-                  className={styles.link}
-                  onClick={() =>
-                    navigate(`/admin/users/${user.id_utilizador}`)
-                  }
-                >
-                  {user.nome}
-                </td>
-
-                <td>{user.email}</td>
-                <td className={styles.role}>{user.role}</td>
-
-                <td>
-                  <span className={styles.badge}>
-                    {user.status}
-                  </span>
-                </td>
-
-                <td className={styles.actions}>
-                  {user.status === "PENDING" && (
-                    <>
-                      <button
-                        className={styles.approve}
-                        onClick={() => approveUser(user.id_utilizador)}
-                      >
-                        Approve
-                      </button>
-
-                      <button
-                        className={styles.reject}
-                        onClick={() => rejectUser(user.id_utilizador)}
-                      >
-                        Refuse
-                      </button>
-                    </>
-                  )}
-
-                  {user.status === "ACTIVE" && (
-                    <span className={styles.muted}>Active</span>
-                  )}
-
-                  {user.status === "REJECTED" && (
-                    <span className={styles.muted}>Rejected</span>
-                  )}
-                </td>   
+        <div className={styles.tableWrapper}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>E-mail</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+
+            <tbody>
+              {filteredUsers.map(user => (
+                <tr key={user.id_utilizador}>
+                  <td
+                    className={styles.link}
+                    onClick={() =>
+                      navigate(`/admin/users/${user.id_utilizador}`)
+                    }
+                  >
+                    {user.nome}
+                  </td>
+
+                  <td>{user.email}</td>
+                  <td className={styles.role}>{user.role}</td>
+
+                  <td>
+                    <span className={styles.badge}>
+                      {user.status}
+                    </span>
+                  </td>
+
+                  <td className={styles.actions}>
+                    {user.status === "PENDING" && (
+                      <>
+                        <button
+                          className={styles.approve}
+                          onClick={() => approveUser(user.id_utilizador)}
+                        >
+                          Approve
+                        </button>
+
+                        <button
+                          className={styles.reject}
+                          onClick={() => rejectUser(user.id_utilizador)}
+                        >
+                          Refuse
+                        </button>
+                      </>
+                    )}
+
+                    {user.status === "ACTIVE" && (
+                      <span className={styles.muted}>Active</span>
+                    )}
+
+                    {user.status === "REJECTED" && (
+                      <span className={styles.muted}>Rejected</span>
+                    )}
+                  </td>   
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

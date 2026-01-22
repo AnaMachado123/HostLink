@@ -61,7 +61,9 @@ export default function RequestServices() {
                 ? "Cleaning"
                 : s.id_tiposervico === 2
                 ? "Maintenance"
-                : "Transport"
+                : "Transport",
+            location: s.empresa_location 
+            //company: s.empresa_nome
           }))
         );
 
@@ -128,7 +130,7 @@ export default function RequestServices() {
         body: JSON.stringify(payload)
       });
 
-      console.log("📡 RESPONSE STATUS:", res.status);
+      console.log(" RESPONSE STATUS:", res.status);
 
       if (res.status === 409) {
         const err = await res.json();
@@ -224,6 +226,12 @@ export default function RequestServices() {
               >
                 {service.type}
               </span>
+
+              {/* 📍 LOCALIZAÇÃO DA EMPRESA */}
+              <p className={styles.location}>
+                📍 {service.location}
+              </p> 
+              
               <p className={styles.description}>
                 {service.description}
               </p>

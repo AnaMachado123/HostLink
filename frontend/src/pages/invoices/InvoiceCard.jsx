@@ -28,16 +28,12 @@ export default function InvoiceCard({ invoice }) {
       <div className={styles.cardBody}>
         <div>
           <span className={styles.label}>Service</span>
-          <span className={styles.value}>
-            {invoice.servico_nome}
-          </span>
+          <span className={styles.value}> {invoice.servico_nome}</span>
         </div>
 
         <div>
           <span className={styles.label}>Property</span>
-          <span className={styles.value}>
-            {invoice.nome_imovel}
-          </span>
+          <span className={styles.value}> {invoice.nome_imovel}</span>
         </div>
       </div>
 

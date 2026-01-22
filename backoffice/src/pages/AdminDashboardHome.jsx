@@ -25,27 +25,27 @@ export default function AdminDashboardHome() {
       <div className={styles.grid}>
         <div className={styles.card}>
           <span className={styles.label}>Total users</span>
-          <span className={styles.value}>{stats.total_users}</span>
+          <span className={styles.value}> {stats.total_users}</span>
         </div>
 
         <div className={styles.card}>
           <span className={styles.label}>Active companies</span>
-          <span className={styles.value}>{stats.active_companies}</span>
+          <span className={styles.value}> {stats.active_companies}</span>
         </div>
 
         <div className={styles.card}>
           <span className={styles.label}>Active owners</span>
-          <span className={styles.value}>{stats.active_owners}</span>
+          <span className={styles.value}> {stats.active_owners}</span>
         </div>
 
         <div className={styles.card}>
           <span className={styles.label}>Pending requests</span>
-          <span className={styles.value}>{stats.pending_requests}</span>
+          <span className={styles.value}> {stats.pending_requests}</span>
         </div>
 
         <div className={styles.card}>
           <span className={styles.label}>Completed services</span>
-          <span className={styles.value}>{stats.completed_services}</span>
+          <span className={styles.value}> {stats.completed_services}</span>
         </div>
       </div>
     </div>

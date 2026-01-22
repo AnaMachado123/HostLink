@@ -66,7 +66,7 @@ async function register(req, res) {
 }
 
 // =======================
-// LOGIN  ✅ ESTÁVEL
+// LOGIN ESTÁVEL
 // =======================
 async function login(req, res) {
   const { username, password } = req.body;
@@ -86,17 +86,26 @@ async function login(req, res) {
     if (!passwordMatch) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
+    
+    if (user.status === "REJECTED") {
+      return res.status(403).json({
+        error: "Your account was rejected by the administrator."
+      });
+    }
+
+    /*if (user.status === "PENDING") {
+      return res.status(403).json({
+        error: "Your account is pending approval by the administrator."
+      });
+    }*/
 
     const role = ROLE_MAP_REVERSE[user.id_tipouser];
 
-    // ⚠️ CRÍTICO:
     // login NÃO depende de perfil existir
     let idEmpresa = null;
 
-<<<<<<< HEAD
+
     // se for empresa, vai buscar o id_empresa
-=======
->>>>>>> b1d46b8b0213a4c87588173bacafdc6705ef2694
     if (role === "empresa") {
       const empresa = await AuthModel.findEmpresaByUserId(
         user.id_utilizador

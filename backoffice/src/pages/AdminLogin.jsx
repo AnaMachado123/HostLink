@@ -41,7 +41,7 @@ export default function AdminLogin() {
       <div className={styles.card}>
         <h2 className={styles.title}>HostLink Admin</h2>
         <p className={styles.subtitle}>
-          Faz login para aceder ao backoffice.
+          Restricted access to platform administration.
         </p>
 
         {error && <p className={styles.error}>{error}</p>}
@@ -70,7 +70,7 @@ export default function AdminLogin() {
           </div>
 
           <button className={styles.button} type="submit">
-            Entrar
+            Sign in
           </button>
         </form>
       </div>

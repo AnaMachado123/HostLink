@@ -47,5 +47,12 @@ router.get(
   adminController.getAdminDashboard
 );
 
+router.get(
+  "/invoices",
+  authMiddleware,
+  isAdmin,
+  adminController.getAllInvoices
+);
+
 
 module.exports = router;

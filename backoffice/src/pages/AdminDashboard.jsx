@@ -27,16 +27,23 @@ export default function AdminDashboard() {
             <NavLink to="/admin" end className={({ isActive }) => (isActive ? styles.active : styles.link)}>
               Dashboard
             </NavLink>
-
+           
             <NavLink to="/admin/users" className={({ isActive }) => (isActive ? styles.active : styles.link)}>
               Manage Users
             </NavLink>
+
+            <NavLink to="/admin/invoices" className={({ isActive }) => (isActive ? styles.active : styles.link)}>
+              Invoices
+            </NavLink>
+
+            {/*}
             <NavLink to="/admin/companies" className={({ isActive }) => (isActive ? styles.active : styles.link)}>
               Manage Companies
             </NavLink>
             <NavLink to="/admin/services" className={({ isActive }) => (isActive ? styles.active : styles.link)}>
               Manage Services
             </NavLink>
+            */}
           </nav>
         </div>
 

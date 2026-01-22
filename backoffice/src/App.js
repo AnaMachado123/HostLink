@@ -7,6 +7,7 @@ import ManageCompanies from "./pages/ManageCompanies";
 import ManageServices from "./pages/ManageServices";
 import ReviewUser from "./pages/ReviewUser";
 import AdminDashboardHome from "./pages/AdminDashboardHome";
+import AdminInvoices from "./pages/AdminInvoices"
 
 
 
@@ -35,6 +36,7 @@ export default function App() {
 
           <Route path="users" element={<ManageUsers />} />
           <Route path="users/:id" element={<ReviewUser />} />
+          <Route path="invoices" element={<AdminInvoices />} />
           <Route path="companies" element={<ManageCompanies />} />
           <Route path="services" element={<ManageServices />} />
         </Route>
